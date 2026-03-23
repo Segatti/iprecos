@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Opcional se você NÃO usar dart-define=GOOGLE_WEB_CLIENT_ID no Flutter.
+      Use o mesmo ID do cliente OAuth tipo "Web" do Google Cloud Console.
+      Formato: xxxxx.apps.googleusercontent.com
+    -->
+    <string name="default_web_client_id" translatable="false">SUBSTITUA_PELO_WEB_CLIENT_ID.apps.googleusercontent.com</string>
+</resources>

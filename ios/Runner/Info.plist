@@ -45,5 +45,21 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>O app usa a câmera para ler o QR code da nota e para fotografar produtos cadastrados.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>O app acessa suas fotos para você escolher a imagem do produto (com recorte 4:3).</string>
+	<!-- Google Sign-In: substitua pelo REVERSED_CLIENT_ID do Google Cloud / Firebase (iOS). -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.SUBSTITUA_PELO_REVERSO_DO_CLIENT_ID_IOS</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

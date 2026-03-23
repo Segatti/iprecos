@@ -1,0 +1,1463 @@
+<!doctype html>
+
+<html>
+  <head>
+    <meta http-equiv="Expires" content="Thu, 01 Jan 1970 00:00:00 GMT" />
+    <meta http-equiv="Cache-Control" content="no-store" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=9, IE=edge" />
+    <link
+      href="/estilos/SefazEstilos.css"
+      rel="stylesheet"
+      type="text/css"
+      media="screen"
+    />
+    <link
+      rel="stylesheet"
+      href="/nfce/css/jquery.mobile-1.4.5.min.css"
+      type="text/css"
+    />
+    <link rel="stylesheet" href="/nfce/css/nfceMob.css" type="text/css" />
+    <link rel="stylesheet" href="/nfce/css/nfceMob_ie.css" type="text/css" />
+    <script type="text/javascript" src="/nfce/js/index.js"></script>
+    <script type="text/javascript" src="/nfce/js/jquery.js"></script>
+    <script
+      type="text/javascript"
+      src="/nfce/js/jquery.mobile-1.4.5.min.js"
+    ></script>
+    <script type="text/javascript" src="/nfce/js/jqueryui.js"></script>
+    <script
+      type="text/javascript"
+      src="/javascript/miscelanea/desabilitarBotoes.js"
+    ></script>
+    <script type="text/javascript" language="javascript">
+      function paginaImpressao() {
+        open(
+          "/nfce/consultanfce?pagn=impressao&tagSolicitada=9&tpImp=DANFE",
+          "Resumo",
+          "top=0,left=0,width=760,height=600,scrollbars=1,resizable=1",
+        );
+      }
+
+      function paginaInicial() {
+        window.open("/nfce/consultanfce", "_self");
+      }
+
+      function desabilitaBotoes() {
+        //Desabilitando botões, caso validação ocorra com sucesso
+        desabilitarBotoes(obterArrayBotoes(form));
+        return true;
+      }
+
+      function obterArrayBotoes(form) {
+        //Obtendo os botões a serem desabilitados
+        var botao1 = form.bttnNovaConsulta;
+        var botao2 = form.bttnCancelar;
+        var botao3 = form.btnImpressaoUso;
+        var botao4 = form.bttnImprimir;
+        //Retorna um Array com os botões que devem ser desabilitados
+        return new Array(botao1, botao2, botao3, botao4);
+      }
+      window.onload = function () {
+        document.form.onsubmit = function () {
+          desabilitaBotoes();
+        };
+      };
+    </script>
+  </head>
+  <body>
+    <form name="form" action="/nfce/consultanfce" method="POST">
+      <input type="hidden" name="ret" value="1" />
+      <input type="hidden" name="pagn" />
+      <div
+        style="
+          text-align: center;
+          position: relative;
+          display: block;
+          z-index: 50;
+        "
+      >
+        <br />
+        <div style="width: 100%">
+          <table
+            class="SEFAZ-TABLE-Moldura"
+            width="50%"
+            align="center"
+            cellspacing="0"
+            cellpadding="2px"
+            border="0"
+          >
+            <tr class="SEFAZ-TR-SubTitulo" valign="middle">
+              <td align="left">
+                <input
+                  type="button"
+                  value="Imprimir NFC-e"
+                  class="SEFAZ-INPUT-Botao"
+                  name="bttnImprimir"
+                  onclick="javaScript: paginaImpressao();"
+                />
+                <input
+                  type="button"
+                  value="Nova Consulta"
+                  class="SEFAZ-INPUT-Botao"
+                  name="bttnNovaConsulta"
+                  onclick="javaScript: paginaInicial();"
+                />
+                <input
+                  type="button"
+                  value="Voltar"
+                  class="SEFAZ-INPUT-Botao"
+                  onclick="javascript: history.go(-1);"
+                  name="bttnCancelar"
+                />
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </form>
+    <div>
+      <div
+        data-role="header"
+        xmlns:chave="http://exslt.org/chaveacesso"
+        xmlns:r="http://www.serpro.gov.br/nfe/remessanfe.xsd"
+        xmlns:n="http://www.portalfiscal.inf.br/nfe"
+      >
+        <h1 class="tit">
+          <img
+            src="imagem/NFCe_vertical_semDescricao.png"
+            width="90"
+            height="64"
+            alt="NFC-e"
+          />
+          <p>
+            DOCUMENTO AUXILIAR DA NOTA FISCAL DE CONSUMIDOR ELETR&Ocirc;NICA
+          </p>
+          <p></p>
+        </h1>
+      </div>
+      <div data-role="content">
+        <div id="conteudo">
+          <div id="avisos"></div>
+          <div class="txtCenter">
+            <div id="u20" class="txtTopo">WMS SUPERMERCADOS DO BRASIL LTDA</div>
+            <div class="text">CNPJ: 93.209.765/0575-77</div>
+            <div class="text">
+              AV QUINZE DE NOVEMBRO , 981 , , CENTRO-SUL , CUIABA , MT
+            </div>
+          </div>
+          <table
+            border="0"
+            align="center"
+            cellpadding="0"
+            cellspacing="0"
+            id="tabResult"
+            data-filter="true"
+          >
+            <tr id="Item + 1">
+              <td valign="top">
+                <span class="txtTit">OVO BCO PQ</span
+                ><span class="RCod"> (C&oacute;digo: AR068060 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>BDJ9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 20,9</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">20,90</span>
+              </td>
+            </tr>
+            <tr id="Item + 2">
+              <td valign="top">
+                <span class="txtTit">OVO BCO GD PVC</span
+                ><span class="RCod"> (C&oacute;digo: AR021825 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>BDJ6</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 21,9</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">21,90</span>
+              </td>
+            </tr>
+            <tr id="Item + 3">
+              <td valign="top">
+                <span class="txtTit">LEITE PIRACANJUBA IN</span
+                ><span class="RCod"> (C&oacute;digo: AR058045 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>3</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 6,39</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">19,17</span>
+              </td>
+            </tr>
+            <tr id="Item + 4">
+              <td valign="top">
+                <span class="txtTit">OLEO DESENGRIPANTE</span
+                ><span class="RCod"> (C&oacute;digo: AR063859 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 11,5</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">11,50</span>
+              </td>
+            </tr>
+            <tr id="Item + 5">
+              <td valign="top">
+                <span class="txtTit">L.COND.PIRAC.SEMI.TP</span
+                ><span class="RCod"> (C&oacute;digo: AR029518 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>3</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 6,49</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">19,47</span>
+              </td>
+            </tr>
+            <tr id="Item + 6">
+              <td valign="top">
+                <span class="txtTit">LEMON PERPPER</span
+                ><span class="RCod"> (C&oacute;digo: AR007888 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 4,15</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">4,15</span>
+              </td>
+            </tr>
+            <tr id="Item + 7">
+              <td valign="top">
+                <span class="txtTit">ALHO SUL BRA.POTE</span
+                ><span class="RCod"> (C&oacute;digo: AR069634 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>PTE9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 11,99</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">11,99</span>
+              </td>
+            </tr>
+            <tr id="Item + 8">
+              <td valign="top">
+                <span class="txtTit">MILHO PIPOCA MICRO</span
+                ><span class="RCod"> (C&oacute;digo: AR053456 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>3</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 5,99</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">17,97</span>
+              </td>
+            </tr>
+            <tr id="Item + 9">
+              <td valign="top">
+                <span class="txtTit">CR.LEITE PIRACANJUBA</span
+                ><span class="RCod"> (C&oacute;digo: AR023290 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>4</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 2,79</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">11,16</span>
+              </td>
+            </tr>
+            <tr id="Item + 10">
+              <td valign="top">
+                <span class="txtTit">MEIO ASA FGO SEARA</span
+                ><span class="RCod"> (C&oacute;digo: AR058580 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>2</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 21,9</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">43,80</span>
+              </td>
+            </tr>
+            <tr id="Item + 11">
+              <td valign="top">
+                <span class="txtTit">FILEZ.FGO LAR IQF.</span
+                ><span class="RCod"> (C&oacute;digo: AR039298 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 19,5</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">19,50</span>
+              </td>
+            </tr>
+            <tr id="Item + 12">
+              <td valign="top">
+                <span class="txtTit">FILE MARINADO SADIA</span
+                ><span class="RCod"> (C&oacute;digo: AR096426 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 31,9</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">31,90</span>
+              </td>
+            </tr>
+            <tr id="Item + 13">
+              <td valign="top">
+                <span class="txtTit">RF.SALSICHA HOT DOG</span
+                ><span class="RCod"> (C&oacute;digo: AR062542 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>PCT9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 11,9</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">11,90</span>
+              </td>
+            </tr>
+            <tr id="Item + 14">
+              <td valign="top">
+                <span class="txtTit">BACON FATIADO SEARA</span
+                ><span class="RCod"> (C&oacute;digo: AR063548 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 23,9</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">23,90</span>
+              </td>
+            </tr>
+            <tr id="Item + 15">
+              <td valign="top">
+                <span class="txtTit">PEPPERONI SEARA</span
+                ><span class="RCod"> (C&oacute;digo: AR061889 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 12,9</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">12,90</span>
+              </td>
+            </tr>
+            <tr id="Item + 16">
+              <td valign="top">
+                <span class="txtTit">RF.BROCOLIS LAR CONG</span
+                ><span class="RCod"> (C&oacute;digo: AR055896 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>PCT9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 17,9</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">17,90</span>
+              </td>
+            </tr>
+            <tr id="Item + 17">
+              <td valign="top">
+                <span class="txtTit">BATATA C/CASCA</span
+                ><span class="RCod"> (C&oacute;digo: AR068857 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 19,9</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">19,90</span>
+              </td>
+            </tr>
+            <tr id="Item + 18">
+              <td valign="top">
+                <span class="txtTit">CHICL.ARCOR PLUT ABO</span
+                ><span class="RCod"> (C&oacute;digo: AR077731 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 7,9</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">7,90</span>
+              </td>
+            </tr>
+            <tr id="Item + 19">
+              <td valign="top">
+                <span class="txtTit">PAO HOT DOG DA CASA</span
+                ><span class="RCod"> (C&oacute;digo: AR035539 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>PCT1</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 7,49</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">7,49</span>
+              </td>
+            </tr>
+            <tr id="Item + 20">
+              <td valign="top">
+                <span class="txtTit">BISC.MABEL ROSQUINHA</span
+                ><span class="RCod"> (C&oacute;digo: AR082189 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 8,9</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">8,90</span>
+              </td>
+            </tr>
+            <tr id="Item + 21">
+              <td valign="top">
+                <span class="txtTit">MOLHO MOSTARDA CEPER</span
+                ><span class="RCod"> (C&oacute;digo: AR063704 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 12,99</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">12,99</span>
+              </td>
+            </tr>
+            <tr id="Item + 22">
+              <td valign="top">
+                <span class="txtTit">ATUM PESCADOR SOLIDO</span
+                ><span class="RCod"> (C&oacute;digo: AR079097 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>2</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 9,9</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">19,80</span>
+              </td>
+            </tr>
+            <tr id="Item + 23">
+              <td valign="top">
+                <span class="txtTit">QJO.GOUDA SUPREMO</span
+                ><span class="RCod"> (C&oacute;digo: AR071530 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>0,182</span
+                ><span class="RUN"><strong>UN: </strong>KG9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 99,9</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">18,18</span>
+              </td>
+            </tr>
+            <tr id="Item + 24">
+              <td valign="top">
+                <span class="txtTit">PRES.PERDIGAO FAT.</span
+                ><span class="RCod"> (C&oacute;digo: AR066896 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>2</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 9,98</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">19,96</span>
+              </td>
+            </tr>
+            <tr id="Item + 25">
+              <td valign="top">
+                <span class="txtTit">PAO DE MEL BOLAMEL</span
+                ><span class="RCod"> (C&oacute;digo: AR055093 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 7,89</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">7,89</span>
+              </td>
+            </tr>
+            <tr id="Item + 26">
+              <td valign="top">
+                <span class="txtTit">PIMENTA REINO</span
+                ><span class="RCod"> (C&oacute;digo: AR095184 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>2</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 4,49</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">8,98</span>
+              </td>
+            </tr>
+            <tr id="Item + 27">
+              <td valign="top">
+                <span class="txtTit">ALECRIM MIKA</span
+                ><span class="RCod"> (C&oacute;digo: AR028418 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 2,3</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">2,30</span>
+              </td>
+            </tr>
+            <tr id="Item + 28">
+              <td valign="top">
+                <span class="txtTit">QJO.MUSS.FRIMESA FAT</span
+                ><span class="RCod"> (C&oacute;digo: AR091425 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>2</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 8,5</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">17,00</span>
+              </td>
+            </tr>
+            <tr id="Item + 29">
+              <td valign="top">
+                <span class="txtTit">POLPA NORTE</span
+                ><span class="RCod"> (C&oacute;digo: AR030245 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>8</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 1,95</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">15,60</span>
+              </td>
+            </tr>
+            <tr id="Item + 30">
+              <td valign="top">
+                <span class="txtTit">MAC.NISSIN LAMEN</span
+                ><span class="RCod"> (C&oacute;digo: AR093576 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>2</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 2,59</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">5,18</span>
+              </td>
+            </tr>
+            <tr id="Item + 31">
+              <td valign="top">
+                <span class="txtTit">MAC.INST NISSIN</span
+                ><span class="RCod"> (C&oacute;digo: AR005372 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>2</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 2,59</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">5,18</span>
+              </td>
+            </tr>
+            <tr id="Item + 32">
+              <td valign="top">
+                <span class="txtTit">MAC.NISSIN LAMEN</span
+                ><span class="RCod"> (C&oacute;digo: AR009900 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>4</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 2,59</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">10,36</span>
+              </td>
+            </tr>
+            <tr id="Item + 33">
+              <td valign="top">
+                <span class="txtTit">MAC.NISSIN LAMEN</span
+                ><span class="RCod"> (C&oacute;digo: AR005612 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>2</span
+                ><span class="RUN"><strong>UN: </strong>PCT9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 2,59</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">5,18</span>
+              </td>
+            </tr>
+            <tr id="Item + 34">
+              <td valign="top">
+                <span class="txtTit">MAG.QUALY S/S</span
+                ><span class="RCod"> (C&oacute;digo: AR035266 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 10,5</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">10,50</span>
+              </td>
+            </tr>
+            <tr id="Item + 35">
+              <td valign="top">
+                <span class="txtTit">POLPA NORTE</span
+                ><span class="RCod"> (C&oacute;digo: AR030249 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>8</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 1,95</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">15,60</span>
+              </td>
+            </tr>
+            <tr id="Item + 36">
+              <td valign="top">
+                <span class="txtTit">CENOURA</span
+                ><span class="RCod"> (C&oacute;digo: AR001920 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>0,55</span
+                ><span class="RUN"><strong>UN: </strong>KG9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 6,99</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">3,84</span>
+              </td>
+            </tr>
+            <tr id="Item + 37">
+              <td valign="top">
+                <span class="txtTit">CEBOLA ROXA</span
+                ><span class="RCod"> (C&oacute;digo: AR036041 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>0,22</span
+                ><span class="RUN"><strong>UN: </strong>KG9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 7,99</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">1,76</span>
+              </td>
+            </tr>
+            <tr id="Item + 38">
+              <td valign="top">
+                <span class="txtTit">PIMENTAO VERMELHO</span
+                ><span class="RCod"> (C&oacute;digo: AR001529 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>0,14</span
+                ><span class="RUN"><strong>UN: </strong>KG9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 18,9</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">2,65</span>
+              </td>
+            </tr>
+            <tr id="Item + 39">
+              <td valign="top">
+                <span class="txtTit">PIMENTA CAMBUCI</span
+                ><span class="RCod"> (C&oacute;digo: AR009147 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>0,025</span
+                ><span class="RUN"><strong>UN: </strong>KG9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 28,89</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">0,72</span>
+              </td>
+            </tr>
+            <tr id="Item + 40">
+              <td valign="top">
+                <span class="txtTit">PANO MULTI.USO DURA</span
+                ><span class="RCod"> (C&oacute;digo: AR092427 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 14,9</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">14,90</span>
+              </td>
+            </tr>
+            <tr id="Item + 41">
+              <td valign="top">
+                <span class="txtTit">FEIJAO URBANO</span
+                ><span class="RCod"> (C&oacute;digo: AR032971 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>PCT9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 7,99</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">7,99</span>
+              </td>
+            </tr>
+            <tr id="Item + 42">
+              <td valign="top">
+                <span class="txtTit">PAO HAMB PULLMAN</span
+                ><span class="RCod"> (C&oacute;digo: AR067947 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 16,5</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">16,50</span>
+              </td>
+            </tr>
+            <tr id="Item + 43">
+              <td valign="top">
+                <span class="txtTit">LIMAO TAITI TROPICAL</span
+                ><span class="RCod"> (C&oacute;digo: AR001805 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>0,36</span
+                ><span class="RUN"><strong>UN: </strong>KG9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 4,59</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">1,65</span>
+              </td>
+            </tr>
+            <tr id="Item + 44">
+              <td valign="top">
+                <span class="txtTit">SACOLA RET.ATACADAO</span
+                ><span class="RCod"> (C&oacute;digo: AR075882 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 5,9</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">5,90</span>
+              </td>
+            </tr>
+            <tr id="Item + 45">
+              <td valign="top">
+                <span class="txtTit">BATATA PALHA YOKI</span
+                ><span class="RCod"> (C&oacute;digo: AR070813 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 10,99</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">10,99</span>
+              </td>
+            </tr>
+            <tr id="Item + 46">
+              <td valign="top">
+                <span class="txtTit">BISC.MARILAN MANT.</span
+                ><span class="RCod"> (C&oacute;digo: AR012290 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 6,89</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">6,89</span>
+              </td>
+            </tr>
+            <tr id="Item + 47">
+              <td valign="top">
+                <span class="txtTit">M.BOLO D.BENTA POUCH</span
+                ><span class="RCod"> (C&oacute;digo: AR001010 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>CXT9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 7,4</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">7,40</span>
+              </td>
+            </tr>
+            <tr id="Item + 48">
+              <td valign="top">
+                <span class="txtTit">QJO.RAL.PARM.VIGOR</span
+                ><span class="RCod"> (C&oacute;digo: AR008327 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>PCT9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 6,9</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">6,90</span>
+              </td>
+            </tr>
+            <tr id="Item + 49">
+              <td valign="top">
+                <span class="txtTit">MAC.GALO P.SEMOLADO</span
+                ><span class="RCod"> (C&oacute;digo: AR048835 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>PCT9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 4,09</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">4,09</span>
+              </td>
+            </tr>
+            <tr id="Item + 50">
+              <td valign="top">
+                <span class="txtTit">SAB.FRANCIS BRASIL</span
+                ><span class="RCod"> (C&oacute;digo: AR084812 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 2,99</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">2,99</span>
+              </td>
+            </tr>
+            <tr id="Item + 51">
+              <td valign="top">
+                <span class="txtTit">SAB.FRANCIS BRASIL</span
+                ><span class="RCod"> (C&oacute;digo: AR084814 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 2,99</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">2,99</span>
+              </td>
+            </tr>
+            <tr id="Item + 52">
+              <td valign="top">
+                <span class="txtTit">MISTURA BOLO APTI</span
+                ><span class="RCod"> (C&oacute;digo: AR003403 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>2</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 4,9</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">9,80</span>
+              </td>
+            </tr>
+            <tr id="Item + 53">
+              <td valign="top">
+                <span class="txtTit">SALG.ELMA CHIPS</span
+                ><span class="RCod"> (C&oacute;digo: AR092959 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 5,9</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">5,90</span>
+              </td>
+            </tr>
+            <tr id="Item + 54">
+              <td valign="top">
+                <span class="txtTit">REFR.PO TANG</span
+                ><span class="RCod"> (C&oacute;digo: AR080973 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>2</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 0,94</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">1,88</span>
+              </td>
+            </tr>
+            <tr id="Item + 55">
+              <td valign="top">
+                <span class="txtTit">REFR.PO TANG</span
+                ><span class="RCod"> (C&oacute;digo: AR083947 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>2</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 0,94</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">1,88</span>
+              </td>
+            </tr>
+            <tr id="Item + 56">
+              <td valign="top">
+                <span class="txtTit">LING.T.CALAB.REZENDE</span
+                ><span class="RCod"> (C&oacute;digo: AR080878 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 13,9</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">13,90</span>
+              </td>
+            </tr>
+            <tr id="Item + 57">
+              <td valign="top">
+                <span class="txtTit">SACO ALVEJ.COPATEX</span
+                ><span class="RCod"> (C&oacute;digo: AR021267 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>2</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 10,9</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">21,80</span>
+              </td>
+            </tr>
+            <tr id="Item + 58">
+              <td valign="top">
+                <span class="txtTit">PAPEL HIG.COTTON</span
+                ><span class="RCod"> (C&oacute;digo: AR035215 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 39,2</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">39,20</span>
+              </td>
+            </tr>
+            <tr id="Item + 59">
+              <td valign="top">
+                <span class="txtTit">MAC.ADRIA ESP.FURADO</span
+                ><span class="RCod"> (C&oacute;digo: AR034563 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 6,25</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">6,25</span>
+              </td>
+            </tr>
+            <tr id="Item + 60">
+              <td valign="top">
+                <span class="txtTit">PAO FORMA VISCONTI</span
+                ><span class="RCod"> (C&oacute;digo: AR082245 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>2</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 7,9</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">15,80</span>
+              </td>
+            </tr>
+            <tr id="Item + 61">
+              <td valign="top">
+                <span class="txtTit">REFR.PO TANG</span
+                ><span class="RCod"> (C&oacute;digo: AR080972 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>2</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 0,94</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">1,88</span>
+              </td>
+            </tr>
+            <tr id="Item + 62">
+              <td valign="top">
+                <span class="txtTit">OLEO SOJA LIZA</span
+                ><span class="RCod"> (C&oacute;digo: AR069520 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 6,75</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">6,75</span>
+              </td>
+            </tr>
+            <tr id="Item + 63">
+              <td valign="top">
+                <span class="txtTit">FEIJAO URBANO PRETO</span
+                ><span class="RCod"> (C&oacute;digo: AR032970 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>PCT9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 7,89</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">7,89</span>
+              </td>
+            </tr>
+            <tr id="Item + 64">
+              <td valign="top">
+                <span class="txtTit">DESOD.SANIT G.SOL</span
+                ><span class="RCod"> (C&oacute;digo: AR083138 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 16,5</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">16,50</span>
+              </td>
+            </tr>
+            <tr id="Item + 65">
+              <td valign="top">
+                <span class="txtTit">SAB.LIQ.INTIMO NIVEA</span
+                ><span class="RCod"> (C&oacute;digo: AR078459 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 23</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">23,00</span>
+              </td>
+            </tr>
+            <tr id="Item + 66">
+              <td valign="top">
+                <span class="txtTit">AMAC.ROUPA MON BIJOU</span
+                ><span class="RCod"> (C&oacute;digo: AR061243 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 8,49</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">8,49</span>
+              </td>
+            </tr>
+            <tr id="Item + 67">
+              <td valign="top">
+                <span class="txtTit">INSET.BAYGON AERO</span
+                ><span class="RCod"> (C&oacute;digo: AR075057 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 18,5</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">18,50</span>
+              </td>
+            </tr>
+            <tr id="Item + 68">
+              <td valign="top">
+                <span class="txtTit">MOLHO TOM.BONARE</span
+                ><span class="RCod"> (C&oacute;digo: AR080553 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>2</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 3,5</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">7,00</span>
+              </td>
+            </tr>
+            <tr id="Item + 69">
+              <td valign="top">
+                <span class="txtTit">MOLHO TOM.BONARE</span
+                ><span class="RCod"> (C&oacute;digo: AR080550 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>UND9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 2,75</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">2,75</span>
+              </td>
+            </tr>
+            <tr id="Item + 70">
+              <td valign="top">
+                <span class="txtTit">ARROZ TIO URBANO T1</span
+                ><span class="RCod"> (C&oacute;digo: AR009110 ) </span>
+                <br />
+                <span class="Rqtd"><strong>Qtde.:</strong>1</span
+                ><span class="RUN"><strong>UN: </strong>PCT9</span
+                ><span class="RvlUnit"
+                  ><strong>Vl. Unit.:</strong> &nbsp; 22,9</span
+                >
+              </td>
+              <td align="right" valign="top" class="txtTit noWrap">
+                Vl. Total
+                <br />
+                <span class="valor">22,90</span>
+              </td>
+            </tr>
+          </table>
+          <div id="totalNota" class="txtRight">
+            <div id="linhaTotal">
+              <label>Qtd. total de itens:</label
+              ><span class="totalNumb">70</span>
+            </div>
+            <div id="linhaTotal">
+              <label>Valor total R$:</label
+              ><span class="totalNumb">849,13</span>
+            </div>
+            <div id="linhaTotal">
+              <label>Descontos R$:</label><span class="totalNumb">3,30</span>
+            </div>
+            <div id="linhaTotal" class="linhaShade">
+              <label>Valor a pagar R$:</label
+              ><span class="totalNumb txtMax">845,83</span>
+            </div>
+            <div id="linhaForma">
+              <label>Forma de pagamento:</label
+              ><span class="totalNumb txtTitR">Valor pago R$:</span>
+            </div>
+            <div id="linhaTotal">
+              <label class="tx"> Cart&atilde;o de D&eacute;bito </label
+              ><span class="totalNumb">845,83</span>
+            </div>
+            <div id="linhaTotal">
+              <label class="tx">Troco </label><span class="totalNumb">NaN</span>
+            </div>
+            <div id="linhaTotal" class="spcTop">
+              <label class="txtObs"
+                >Informa&ccedil;&atilde;o dos Tributos Totais Incidentes (Lei
+                Federal 12.741/2012)&nbsp;R$</label
+              ><span class="totalNumb txtObs">213,58</span>
+            </div>
+          </div>
+        </div>
+        <div id="infos" class="txtCenter">
+          <div
+            data-role="collapsible"
+            data-collapsed-icon="carat-d"
+            data-expanded-icon="carat-u"
+            data-collapsed="false"
+          >
+            <h4>Informa&ccedil;&otilde;es gerais da Nota</h4>
+            <ul data-role="listview" data-inset="false">
+              <li>
+                <strong>EMISS&Atilde;O NORMAL</strong>
+                <br />
+                <br />
+                <strong>N&uacute;mero: </strong>91432<strong>
+                  S&eacute;rie: </strong
+                >506<strong> Emiss&atilde;o: </strong>22/03/2026 12:47:22 - Via
+                Consumidor
+                <br />
+                <br />
+                <strong>Protocolo de Autoriza&ccedil;&atilde;o: </strong
+                >151260168740013 22/03/2026 12:47:57<br />
+                <br />
+                <strong>
+                  Ambiente de Produ&ccedil;&atilde;o - Vers&atilde;o XML: 4.00 -
+                  Vers&atilde;o XSLT: 2.05
+                </strong>
+              </li>
+            </ul>
+          </div>
+          <div
+            data-role="collapsible"
+            data-collapsed-icon="carat-d"
+            data-expanded-icon="carat-u"
+            data-collapsed="false"
+          >
+            <h4>Chave de acesso</h4>
+            <ul data-role="listview" data-inset="false">
+              <li>
+                Consulte pela Chave de Acesso em
+                http://www.sefaz.mt.gov.br/nfce/consultanfce<br />
+                <br />
+                <strong>Chave de acesso:</strong>
+                <br />
+                <span class="chave"
+                  >5126 0393 2097 6505 7577 6550 6000 0914 3210 4857 9176</span
+                >
+              </li>
+            </ul>
+          </div>
+          <div
+            data-role="collapsible"
+            data-collapsed-icon="carat-d"
+            data-expanded-icon="carat-u"
+            data-collapsed="false"
+          >
+            <h4>Consumidor</h4>
+            <ul data-role="listview" data-inset="false">
+              <li><strong>CPF: </strong>079.108.761-14</li>
+              <li>
+                <strong>Nome: </strong>
+              </li>
+            </ul>
+          </div>
+          <div
+            data-role="collapsible"
+            data-collapsed-icon="carat-d"
+            data-expanded-icon="carat-u"
+            data-collapsed="false"
+          >
+            <h4>Informa&ccedil;&otilde;es de interesse do contribuinte</h4>
+            <ul data-role="listview" data-inset="false">
+              <li>PDV : 6 - TRANSACAO : 24638</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
