@@ -3,7 +3,7 @@ import 'package:sqflite/sqflite.dart';
 
 /// Abertura do SQLite (listas de compras + NFC-e SEFAZ-MT).
 abstract final class ShoppingListsDatabase {
-  static const version = 6;
+  static const version = 7;
 
   static Future<Database> openDefault() async {
     final dir = await getDatabasesPath();
@@ -42,6 +42,10 @@ ALTER TABLE shopping_list_items ADD COLUMN last_price_recorded_at_ms INTEGER;
         if (oldVersion < 6) {
           await _createNfceReceiptItemOverridesTable(db);
         }
+        if (oldVersion < 7) {
+          await _dedupManualProductsBarcode(db);
+          await _createManualProductsBarcodeIndex(db);
+        }
       },
     );
   }
@@ -68,6 +72,7 @@ ALTER TABLE shopping_list_items ADD COLUMN last_price_recorded_at_ms INTEGER;
     await _createNfceReceiptsTable(db);
     await _createManualProductsTable(db);
     await _createNfceReceiptItemOverridesTable(db);
+    await _createManualProductsBarcodeIndex(db);
   }
 
   static Future<void> _createShoppingListsTables(Database db) async {
@@ -131,6 +136,38 @@ CREATE TABLE nfce_receipt_item_overrides (
   user_brand TEXT,
   PRIMARY KEY (receipt_id, item_index),
   FOREIGN KEY (receipt_id) REFERENCES nfce_receipts (id) ON DELETE CASCADE
+);
+''');
+  }
+
+  /// Garante unicidade do código de barras em `manual_products`.
+  ///
+  /// O índice é parcial (ignora `NULL` / `''`) porque produtos pendentes
+  /// podem ainda não ter código de barras cadastrado.
+  static Future<void> _createManualProductsBarcodeIndex(Database db) async {
+    await db.execute('''
+CREATE UNIQUE INDEX IF NOT EXISTS idx_manual_products_barcode
+ON manual_products (barcode)
+WHERE barcode IS NOT NULL AND barcode <> '';
+''');
+  }
+
+  /// Em bases pré-v7 podem existir produtos manuais duplicados pelo mesmo
+  /// código de barras. Mantemos o mais recente (`created_at_ms` maior) e
+  /// removemos os demais, para permitir a criação do índice único acima.
+  static Future<void> _dedupManualProductsBarcode(Database db) async {
+    await db.execute('''
+DELETE FROM manual_products
+WHERE id IN (
+  SELECT m.id FROM manual_products m
+  JOIN (
+    SELECT barcode, MAX(created_at_ms) AS max_ms
+    FROM manual_products
+    WHERE barcode IS NOT NULL AND barcode <> ''
+    GROUP BY barcode
+    HAVING COUNT(*) > 1
+  ) d ON d.barcode = m.barcode
+  WHERE m.created_at_ms < d.max_ms
 );
 ''');
   }

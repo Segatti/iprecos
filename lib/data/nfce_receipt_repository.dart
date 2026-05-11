@@ -379,7 +379,10 @@ class NfceReceiptRepository {
       limit: 1,
     );
     if (rows.isEmpty) return null;
-    final row = rows.single;
+    return _manualProductFromRow(rows.single);
+  }
+
+  ManualProductRecord _manualProductFromRow(Map<String, Object?> row) {
     return ManualProductRecord(
       id: row['id']! as String,
       name: row['name']! as String,
@@ -391,6 +394,84 @@ class NfceReceiptRepository {
       measureUnitCode: (row['measure_unit_code'] as String?)?.trim(),
       photoRelativePath: (row['photo_relative_path'] as String?)?.trim(),
     );
+  }
+
+  /// Localiza um produto manual pelo código de barras (case-sensitive, sem
+  /// normalização de dígitos). Retorna `null` quando o código é vazio.
+  Future<ManualProductRecord?> findManualProductByBarcode(String barcode) async {
+    final b = barcode.trim();
+    if (b.isEmpty) return null;
+    final rows = await _db.query(
+      'manual_products',
+      where: 'barcode = ?',
+      whereArgs: [b],
+      limit: 1,
+    );
+    if (rows.isEmpty) return null;
+    return _manualProductFromRow(rows.single);
+  }
+
+  /// Produtos manuais "pendentes": sem foto **ou** sem código de barras.
+  ///
+  /// Ordenados pelos mais recentes primeiro.
+  Future<List<ManualProductRecord>> listPendingManualProducts() async {
+    final rows = await _db.query(
+      'manual_products',
+      where: "barcode IS NULL OR TRIM(barcode) = '' "
+          "OR photo_relative_path IS NULL OR TRIM(photo_relative_path) = ''",
+      orderBy: 'created_at_ms DESC',
+    );
+    return rows.map(_manualProductFromRow).toList();
+  }
+
+  /// Remove o cadastro manual e devolve o caminho relativo da foto (se houver)
+  /// para que o chamador possa apagar o arquivo em disco.
+  Future<String?> deleteManualProduct(String id) async {
+    final rows = await _db.query(
+      'manual_products',
+      columns: ['photo_relative_path'],
+      where: 'id = ?',
+      whereArgs: [id],
+      limit: 1,
+    );
+    final photo = rows.isEmpty
+        ? null
+        : (rows.single['photo_relative_path'] as String?)?.trim();
+    await _db.delete('manual_products', where: 'id = ?', whereArgs: [id]);
+    return photo != null && photo.isNotEmpty ? photo : null;
+  }
+
+  /// Verifica se algum item de NFC-e salva (ou override) contém o `barcode`.
+  Future<bool> receiptsContainBarcode(String barcode) async {
+    final b = barcode.trim();
+    if (b.isEmpty) return false;
+
+    final overrideHit = await _db.query(
+      'nfce_receipt_item_overrides',
+      columns: ['receipt_id'],
+      where: 'user_barcode = ?',
+      whereArgs: [b],
+      limit: 1,
+    );
+    if (overrideHit.isNotEmpty) return true;
+
+    final receipts = await _db.query('nfce_receipts', columns: ['payload_json']);
+    for (final row in receipts) {
+      try {
+        final decoded = jsonDecode(row['payload_json']! as String);
+        if (decoded is! Map) continue;
+        final items = decoded['items'];
+        if (items is! List) continue;
+        for (final raw in items) {
+          if (raw is! Map) continue;
+          final code = raw['code']?.toString().trim();
+          if (code != null && code == b) return true;
+        }
+      } catch (_) {
+        continue;
+      }
+    }
+    return false;
   }
 
   /// Atualiza cadastro manual sem alterar preço (`unit_price`) nem data de criação.

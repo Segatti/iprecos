@@ -213,6 +213,142 @@ void main() {
       expect(lines.single.brand, 'Marca Y');
     });
 
+    test('findManualProductByBarcode localiza o registro pelo EAN', () async {
+      final (db, repo) = await openRepo();
+      addTearDown(db.close);
+
+      final id = await repo.insertManualProduct(
+        name: 'Café',
+        barcode: '7890001112223',
+        measureQty: '500',
+        measureUnitCode: 'g',
+      );
+
+      final found = await repo.findManualProductByBarcode('7890001112223');
+      expect(found, isNotNull);
+      expect(found!.id, id);
+      expect(found.name, 'Café');
+
+      expect(await repo.findManualProductByBarcode('outroEAN'), isNull);
+      expect(await repo.findManualProductByBarcode(''), isNull);
+    });
+
+    test('barcode duplicado em manual_products viola índice único', () async {
+      final (db, repo) = await openRepo();
+      addTearDown(db.close);
+
+      await repo.insertManualProduct(
+        name: 'A',
+        barcode: '999000111',
+        measureQty: '1',
+        measureUnitCode: 'unidade',
+      );
+      expect(
+        () => repo.insertManualProduct(
+          name: 'B',
+          barcode: '999000111',
+          measureQty: '1',
+          measureUnitCode: 'unidade',
+        ),
+        throwsA(isA<DatabaseException>()),
+      );
+    });
+
+    test('listPendingManualProducts traz só itens sem foto ou sem EAN', () async {
+      final (db, repo) = await openRepo();
+      addTearDown(db.close);
+
+      final completoId = await repo.insertManualProduct(
+        name: 'Completo',
+        barcode: '111',
+        measureQty: '1',
+        measureUnitCode: 'unidade',
+      );
+      await repo.setManualProductPhotoRelativePath(
+        completoId,
+        'product_photos/$completoId.jpg',
+      );
+
+      await repo.insertManualProduct(
+        name: 'Sem foto',
+        barcode: '222',
+        measureQty: '1',
+        measureUnitCode: 'unidade',
+      );
+      final semEan = await repo.insertManualProduct(
+        name: 'Sem EAN',
+        measureQty: '1',
+        measureUnitCode: 'unidade',
+      );
+      await repo.setManualProductPhotoRelativePath(
+        semEan,
+        'product_photos/$semEan.jpg',
+      );
+
+      final pendentes = await repo.listPendingManualProducts();
+      final nomes = pendentes.map((r) => r.name).toSet();
+      expect(nomes, {'Sem foto', 'Sem EAN'});
+      expect(nomes.contains('Completo'), isFalse);
+    });
+
+    test('deleteManualProduct remove o registro e devolve foto', () async {
+      final (db, repo) = await openRepo();
+      addTearDown(db.close);
+
+      final id = await repo.insertManualProduct(
+        name: 'Para remover',
+        barcode: '333',
+        measureQty: '1',
+        measureUnitCode: 'unidade',
+      );
+      await repo.setManualProductPhotoRelativePath(
+        id,
+        'product_photos/$id.jpg',
+      );
+
+      final photo = await repo.deleteManualProduct(id);
+      expect(photo, 'product_photos/$id.jpg');
+      expect(await repo.getManualProduct(id), isNull);
+      expect(await repo.findManualProductByBarcode('333'), isNull);
+    });
+
+    test('receiptsContainBarcode acha código na nota e no override', () async {
+      final (db, repo) = await openRepo();
+      addTearDown(db.close);
+
+      await repo.savePayload(
+        sourceUrl: 'https://nfce/x',
+        emissionRaw: 'a',
+        payload: {
+          'items': [
+            {
+              'description': 'Item com código',
+              'code': '7891000000000',
+              'quantity': '1',
+              'lineTotal': '1,00',
+            },
+            {
+              'description': 'Item sem código',
+              'quantity': '1',
+              'lineTotal': '1,00',
+            },
+          ],
+        },
+      );
+
+      expect(await repo.receiptsContainBarcode('7891000000000'), isTrue);
+      expect(await repo.receiptsContainBarcode('nao-existe'), isFalse);
+
+      final id = (await repo.listReceipts()).single.id;
+      await repo.upsertReceiptItemOverride(
+        receiptId: id,
+        itemIndex: 1,
+        userBarcode: 'OVR123',
+      );
+
+      expect(await repo.receiptsContainBarcode('OVR123'), isTrue);
+    });
+
     test('receipt item override não substitui código já vindo da nota', () async {
       final (db, repo) = await openRepo();
       addTearDown(db.close);

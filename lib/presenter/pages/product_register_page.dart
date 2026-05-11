@@ -9,6 +9,7 @@ import '../../data/nfce_receipt_repository.dart';
 import '../../data/product_catalog.dart';
 import '../../data/product_measure_unit.dart';
 import '../../data/product_photo_storage.dart';
+import '../utils/product_barcode_conflict_dialog.dart';
 import '../utils/product_image_picker_crop.dart';
 import '../view_models/lists_view_model.dart';
 import '../view_models/product_search_view_model.dart';
@@ -81,6 +82,24 @@ class _ProductRegisterPageState extends State<ProductRegisterPage> {
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
+
+    final barcodeRaw = _barcode.text.trim();
+    if (barcodeRaw.isNotEmpty) {
+      final existing =
+          await widget.repository.findManualProductByBarcode(barcodeRaw);
+      if (!mounted) return;
+      if (existing != null) {
+        final confirmed = await confirmOverwriteManualProductByBarcode(
+          context: context,
+          existing: existing,
+        );
+        if (!mounted) return;
+        if (!confirmed) return;
+        final photo = await widget.repository.deleteManualProduct(existing.id);
+        await ProductPhotoStorage.deleteIfExistsRelative(photo);
+      }
+    }
+
     setState(() => _saving = true);
     try {
       final id = await widget.repository.insertManualProduct(

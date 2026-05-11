@@ -15,6 +15,8 @@ class HomePage extends StatelessWidget {
     this.onMinhasCompras,
     this.onEscanearNota,
     this.onBuscarProduto,
+    this.onCadastrarProduto,
+    this.onProdutosPendentes,
   });
 
   /// Nome exibido após "Bem vindo, …". Quando vazio, usa um fallback amigável.
@@ -29,6 +31,8 @@ class HomePage extends StatelessWidget {
   final VoidCallback? onMinhasCompras;
   final VoidCallback? onEscanearNota;
   final VoidCallback? onBuscarProduto;
+  final VoidCallback? onCadastrarProduto;
+  final VoidCallback? onProdutosPendentes;
 
   String get _displayName {
     final trimmed = userName.trim();
@@ -102,6 +106,16 @@ class HomePage extends StatelessWidget {
                     icon: Icons.search_rounded,
                     label: 'Buscar produto',
                     onTap: onBuscarProduto,
+                  ),
+                  _HomeMenuTile(
+                    icon: Icons.add_box_outlined,
+                    label: 'Cadastrar produto',
+                    onTap: onCadastrarProduto,
+                  ),
+                  _HomeMenuTile(
+                    icon: Icons.pending_actions_rounded,
+                    label: 'Produtos pendentes',
+                    onTap: onProdutosPendentes,
                   ),
                 ],
               ),

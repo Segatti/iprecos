@@ -10,4 +10,6 @@ abstract final class AppRoutePaths {
   static const auth = '/auth';
   static const purchases = '/purchases';
   static const purchaseReceiptItemEdit = '/purchase-receipt-item-edit';
+  static const productRegisterScan = '/product-register-scan';
+  static const pendingProducts = '/pending-products';
 }

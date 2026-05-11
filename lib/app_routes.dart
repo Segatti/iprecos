@@ -8,10 +8,12 @@ import 'data/product_catalog.dart';
 import 'presenter/pages/auth_page.dart';
 import 'presenter/pages/home_page.dart';
 import 'presenter/pages/my_list_page.dart';
+import 'presenter/pages/pending_products_page.dart';
 import 'presenter/pages/product_barcode_scan_page.dart';
 import 'presenter/pages/product_detail_page.dart';
 import 'presenter/pages/product_edit_manual_page.dart';
 import 'presenter/pages/product_register_page.dart';
+import 'presenter/pages/product_register_scan_page.dart';
 import 'presenter/pages/product_search_page.dart';
 import 'presenter/pages/purchase_detail_page.dart';
 import 'presenter/pages/receipt_item_edit_page.dart';
@@ -49,6 +51,10 @@ GoRouter createAppRouter(AppViewModel appViewModel) {
             onMinhasCompras: () => context.push(AppRoutePaths.purchases),
             onEscanearNota: () => context.push(AppRoutePaths.scan),
             onBuscarProduto: () => context.push(AppRoutePaths.search),
+            onCadastrarProduto: () =>
+                context.push(AppRoutePaths.productRegisterScan),
+            onProdutosPendentes: () =>
+                context.push(AppRoutePaths.pendingProducts),
           );
         },
       ),
@@ -159,6 +165,20 @@ GoRouter createAppRouter(AppViewModel appViewModel) {
             },
           ),
         ],
+      ),
+      GoRoute(
+        path: AppRoutePaths.productRegisterScan,
+        builder: (context, state) => ProductRegisterScanPage(
+          repository: sl<NfceReceiptRepository>(),
+          productSearchViewModel: sl<ProductSearchViewModel>(),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutePaths.pendingProducts,
+        builder: (context, state) => PendingProductsPage(
+          productSearchViewModel: sl<ProductSearchViewModel>(),
+          listsViewModel: sl<ListsViewModel>(),
+        ),
       ),
       GoRoute(
         path: AppRoutePaths.auth,
