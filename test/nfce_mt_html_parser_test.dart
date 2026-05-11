@@ -73,6 +73,12 @@ void main() {
       expect(r.items.first.lineTotal, '20,90');
       expect(r.purchaseTotalRaw, '849,13');
       expect(r.taxesTotalRaw, '213,58');
+      expect(r.emitterName, 'WMS SUPERMERCADOS DO BRASIL LTDA');
+      expect(r.emitterCnpj, 'CNPJ: 93.209.765/0575-77');
+      expect(
+        r.emitterAddressLine,
+        'AV QUINZE DE NOVEMBRO , 981 , , CENTRO-SUL , CUIABA , MT',
+      );
     });
 
     test('example_qr2: total vem de Valor a pagar (sem linha Valor total)', () {

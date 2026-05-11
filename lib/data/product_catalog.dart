@@ -350,11 +350,19 @@ abstract final class ProductCatalog {
     );
   }
 
-  static bool _looksLikeEan(String? code) {
+  /// `true` quando o código se parece com um EAN (apenas dígitos, >= 8).
+  ///
+  /// A NFC-e SEFAZ-MT costuma trazer um **código interno da loja** em `code`
+  /// (ex.: "AR068060"), que não é um EAN do produto.
+  static bool looksLikeEan(String? code) {
     if (code == null) return false;
-    final digits = code.replaceAll(RegExp(r'\D'), '');
-    return digits.length >= 8 && digits == code.replaceAll(RegExp(r'\s'), '');
+    final trimmed = code.trim();
+    if (trimmed.isEmpty) return false;
+    final digits = trimmed.replaceAll(RegExp(r'\D'), '');
+    return digits.length >= 8 && digits == trimmed.replaceAll(RegExp(r'\s'), '');
   }
+
+  static bool _looksLikeEan(String? code) => looksLikeEan(code);
 
   static String formatSavedDate(int ms) {
     final d = DateTime.fromMillisecondsSinceEpoch(ms);

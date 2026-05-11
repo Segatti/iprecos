@@ -38,7 +38,7 @@ class _PendingProductsPageState extends State<PendingProductsPage> {
   Future<void> _load() async {
     setState(() => _loading = true);
     await widget.productSearchViewModel.load();
-    final rows = widget.productSearchViewModel.visibleRows;
+    final rows = widget.productSearchViewModel.allRows;
 
     final items = <_PendingProductItem>[];
     for (final row in rows) {

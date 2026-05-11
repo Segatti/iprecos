@@ -20,6 +20,9 @@ class ProductSearchViewModel extends ChangeNotifier {
   List<ProductSearchRow> get visibleRows =>
       ProductCatalog.filterRows(_allRows, _query);
 
+  /// Todas as linhas da busca (sem filtro de texto) — para outras telas.
+  List<ProductSearchRow> get allRows => List.unmodifiable(_allRows);
+
   /// Há pelo menos um produto vindo das notas (antes do filtro de busca).
   bool get hasProducts => _allRows.isNotEmpty;
 
@@ -38,6 +41,13 @@ class ProductSearchViewModel extends ChangeNotifier {
   void setQuery(String value) {
     if (_query == value) return;
     _query = value;
+    notifyListeners();
+  }
+
+  /// Limpa o texto de busca (ex.: ao sair da tela de busca).
+  void clearSearchQuery() {
+    if (_query.isEmpty) return;
+    _query = '';
     notifyListeners();
   }
 

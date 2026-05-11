@@ -3,7 +3,7 @@ import 'package:sqflite/sqflite.dart';
 
 /// Abertura do SQLite (listas de compras + NFC-e SEFAZ-MT).
 abstract final class ShoppingListsDatabase {
-  static const version = 7;
+  static const version = 8;
 
   static Future<Database> openDefault() async {
     final dir = await getDatabasesPath();
@@ -46,6 +46,12 @@ ALTER TABLE shopping_list_items ADD COLUMN last_price_recorded_at_ms INTEGER;
           await _dedupManualProductsBarcode(db);
           await _createManualProductsBarcodeIndex(db);
         }
+        if (oldVersion < 8) {
+          await _createStoresTable(db);
+          await db.execute(
+            'ALTER TABLE nfce_receipts ADD COLUMN store_id TEXT REFERENCES stores (id) ON DELETE SET NULL',
+          );
+        }
       },
     );
   }
@@ -69,6 +75,7 @@ ALTER TABLE shopping_list_items ADD COLUMN last_price_recorded_at_ms INTEGER;
 
   static Future<void> createSchema(Database db) async {
     await _createShoppingListsTables(db);
+    await _createStoresTable(db);
     await _createNfceReceiptsTable(db);
     await _createManualProductsTable(db);
     await _createNfceReceiptItemOverridesTable(db);
@@ -103,8 +110,25 @@ CREATE TABLE nfce_receipts (
   source_url TEXT NOT NULL,
   emission_raw TEXT NOT NULL,
   payload_json TEXT NOT NULL,
+  created_at_ms INTEGER NOT NULL,
+  store_id TEXT REFERENCES stores (id) ON DELETE SET NULL
+);
+''');
+  }
+
+  static Future<void> _createStoresTable(Database db) async {
+    await db.execute('''
+CREATE TABLE stores (
+  id TEXT NOT NULL PRIMARY KEY,
+  name TEXT NOT NULL,
+  cnpj TEXT,
+  address_line TEXT,
   created_at_ms INTEGER NOT NULL
 );
+''');
+    await db.execute('''
+CREATE UNIQUE INDEX IF NOT EXISTS idx_stores_name_lower
+ON stores (LOWER(TRIM(name)));
 ''');
   }
 

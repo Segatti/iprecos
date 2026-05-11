@@ -4,17 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../app_route_paths.dart';
 import '../../data/nfce_receipt_repository.dart';
+import '../../data/product_catalog.dart';
 import '../../data/product_photo_storage.dart';
 import '../utils/product_image_picker_crop.dart';
 import '../view_models/lists_view_model.dart';
 import '../view_models/product_search_view_model.dart';
 
 class ReceiptItemEditArgs {
-  const ReceiptItemEditArgs({
-    required this.receiptId,
-    required this.itemIndex,
-  });
+  const ReceiptItemEditArgs({required this.receiptId, required this.itemIndex});
 
   final String receiptId;
   final int itemIndex;
@@ -48,7 +47,11 @@ class _ReceiptItemEditPageState extends State<ReceiptItemEditPage> {
   String? _error;
   String _title = 'Item da nota';
 
-  bool _noteCodeEmpty = false;
+  /// `code` da nota fiscal (pode ser um código interno da loja, não EAN).
+  String? _noteCode;
+
+  /// `true` quando a nota traz um EAN de verdade (>= 8 dígitos numéricos).
+  bool _noteHasEan = false;
   bool _noteBrandEmpty = false;
 
   ReceiptItemOverride? _existing;
@@ -79,7 +82,8 @@ class _ReceiptItemEditPageState extends State<ReceiptItemEditPage> {
     final desc = raw['description']?.toString().trim() ?? '';
     final nc = raw['code']?.toString().trim();
     final nb = raw['brand']?.toString().trim();
-    _noteCodeEmpty = nc == null || nc.isEmpty;
+    _noteCode = (nc == null || nc.isEmpty) ? null : nc;
+    _noteHasEan = ProductCatalog.looksLikeEan(_noteCode);
     _noteBrandEmpty = nb == null || nb.isEmpty;
 
     final ov = await widget.repository.getReceiptItemOverride(
@@ -87,7 +91,7 @@ class _ReceiptItemEditPageState extends State<ReceiptItemEditPage> {
       widget.args.itemIndex,
     );
     _existing = ov;
-    if (_noteCodeEmpty) {
+    if (!_noteHasEan) {
       _barcode.text = ov?.userBarcode ?? '';
     }
     if (_noteBrandEmpty) {
@@ -120,7 +124,57 @@ class _ReceiptItemEditPageState extends State<ReceiptItemEditPage> {
     });
   }
 
+  Future<void> _scanBarcode() async {
+    if (_noteHasEan || _saving) return;
+    final code = await context.push<String>(AppRoutePaths.searchScanBarcode);
+    if (!mounted || code == null || code.isEmpty) return;
+    setState(() {
+      _barcode.text = code;
+    });
+  }
+
   Future<void> _save() async {
+    final ub = !_noteHasEan
+        ? (_barcode.text.trim().isEmpty ? null : _barcode.text.trim())
+        : null;
+    final ubr = _noteBrandEmpty
+        ? (_brand.text.trim().isEmpty ? null : _brand.text.trim())
+        : null;
+
+    if (ub != null && ub != _existing?.userBarcode?.trim()) {
+      final manual = await widget.repository.findManualProductByBarcode(ub);
+      if (!mounted) return;
+      if (manual != null) {
+        await _showEanAlreadyInUseDialog(
+          title: manual.name,
+          subtitle: 'Esse código já pertence a um produto cadastrado.',
+          photoRelativePath: manual.photoRelativePath,
+        );
+        return;
+      }
+
+      final receiptConflict = await widget.repository.findReceiptItemEanConflict(
+        barcode: ub,
+        excludeReceiptId: widget.args.receiptId,
+        excludeItemIndex: widget.args.itemIndex,
+      );
+      if (!mounted) return;
+      if (receiptConflict != null) {
+        final desc = receiptConflict.description.isEmpty
+            ? 'Item de outra NFC-e'
+            : receiptConflict.description;
+        final store = receiptConflict.storeName;
+        await _showEanAlreadyInUseDialog(
+          title: desc,
+          subtitle: store == null || store.isEmpty
+              ? 'Esse código já está vinculado a outro item de NFC-e.'
+              : 'Esse código já está vinculado a outro item de NFC-e ($store).',
+          photoRelativePath: null,
+        );
+        return;
+      }
+    }
+
     setState(() => _saving = true);
     try {
       var photoRel = _existing?.photoRelativePath;
@@ -140,13 +194,6 @@ class _ReceiptItemEditPageState extends State<ReceiptItemEditPage> {
         );
       }
 
-      final ub = _noteCodeEmpty
-          ? (_barcode.text.trim().isEmpty ? null : _barcode.text.trim())
-          : null;
-      final ubr = _noteBrandEmpty
-          ? (_brand.text.trim().isEmpty ? null : _brand.text.trim())
-          : null;
-
       await widget.repository.upsertReceiptItemOverride(
         receiptId: widget.args.receiptId,
         itemIndex: widget.args.itemIndex,
@@ -161,6 +208,60 @@ class _ReceiptItemEditPageState extends State<ReceiptItemEditPage> {
     } finally {
       if (mounted) setState(() => _saving = false);
     }
+  }
+
+  Future<void> _showEanAlreadyInUseDialog({
+    required String title,
+    required String subtitle,
+    required String? photoRelativePath,
+  }) async {
+    final absPath =
+        await ProductPhotoStorage.absolutePathForRelative(photoRelativePath);
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) {
+        final theme = Theme.of(ctx);
+        return AlertDialog(
+          title: const Text('Código de barras já em uso'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (absPath != null && File(absPath).existsSync())
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: AspectRatio(
+                    aspectRatio: 4 / 3,
+                    child: Image.file(File(absPath), fit: BoxFit.cover),
+                  ),
+                ),
+              if (absPath != null && File(absPath).existsSync())
+                const SizedBox(height: 12),
+              Text(
+                title,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                subtitle,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            FilledButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -183,11 +284,7 @@ class _ReceiptItemEditPageState extends State<ReceiptItemEditPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          _title,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
+        title: Text(_title, maxLines: 1, overflow: TextOverflow.ellipsis),
         actions: [
           TextButton(
             onPressed: _saving ? null : _save,
@@ -224,12 +321,16 @@ class _ReceiptItemEditPageState extends State<ReceiptItemEditPage> {
             runSpacing: 4,
             children: [
               OutlinedButton.icon(
-                onPressed: _saving ? null : () => _pickPhoto(ImageSource.gallery),
+                onPressed: _saving
+                    ? null
+                    : () => _pickPhoto(ImageSource.gallery),
                 icon: const Icon(Icons.photo_library_outlined, size: 20),
                 label: const Text('Galeria'),
               ),
               OutlinedButton.icon(
-                onPressed: _saving ? null : () => _pickPhoto(ImageSource.camera),
+                onPressed: _saving
+                    ? null
+                    : () => _pickPhoto(ImageSource.camera),
                 icon: const Icon(Icons.photo_camera_outlined, size: 20),
                 label: const Text('Câmera'),
               ),
@@ -238,33 +339,59 @@ class _ReceiptItemEditPageState extends State<ReceiptItemEditPage> {
                   onPressed: _saving
                       ? null
                       : () => setState(() {
-                            _croppedPath = null;
-                            _removePhoto = true;
-                          }),
+                          _croppedPath = null;
+                          _removePhoto = true;
+                        }),
                   icon: const Icon(Icons.delete_outline, size: 20),
                   label: const Text('Remover foto'),
                 ),
             ],
           ),
           const SizedBox(height: 24),
+          if (_noteCode != null) ...[
+            Text('Código na nota', style: theme.textTheme.labelLarge),
+            const SizedBox(height: 4),
+            Text(_noteCode!, style: theme.textTheme.bodyLarge),
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(
+                _noteHasEan
+                    ? 'Reconhecido como EAN do produto.'
+                    : 'A nota traz apenas o código interno da loja; '
+                          'preencha o EAN abaixo, se conhecer.',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
           Text('Código de barras (EAN)', style: theme.textTheme.labelLarge),
           const SizedBox(height: 4),
           TextFormField(
             controller: _barcode,
-            enabled: _noteCodeEmpty && !_saving,
+            enabled: !_noteHasEan && !_saving,
+            keyboardType: TextInputType.text,
             decoration: InputDecoration(
               border: const OutlineInputBorder(),
-              hintText: _noteCodeEmpty
-                  ? 'Opcional — preencha se a nota não trouxe código'
-                  : 'Já consta na nota fiscal',
+              hintText: _noteHasEan
+                  ? 'Já consta na nota fiscal'
+                  : 'Opcional — preencha se conhecer o EAN do produto',
               isDense: true,
+              suffixIcon: _noteHasEan
+                  ? null
+                  : IconButton(
+                      tooltip: 'Escanear código de barras',
+                      onPressed: _saving ? null : _scanBarcode,
+                      icon: const Icon(Icons.qr_code_scanner),
+                    ),
             ),
           ),
-          if (!_noteCodeEmpty)
+          if (_noteHasEan)
             Padding(
               padding: const EdgeInsets.only(top: 6),
               child: Text(
-                'A nota já informa um código para este item; o código de barras EAN não pode ser alterado aqui.',
+                'A nota fiscal já traz o EAN deste item; o código não pode ser alterado aqui.',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),

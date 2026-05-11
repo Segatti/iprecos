@@ -36,6 +36,9 @@ class NfceParseResult {
     required this.items,
     this.purchaseTotalRaw,
     this.taxesTotalRaw,
+    this.emitterName,
+    this.emitterCnpj,
+    this.emitterAddressLine,
   });
 
   final String emissionRaw;
@@ -48,12 +51,28 @@ class NfceParseResult {
   /// Valor da linha de tributos (Lei 12.741/2012) em `#totalNota`.
   final String? taxesTotalRaw;
 
+  /// Razão social / nome fantasia no topo da nota (`div.txtTopo`), quando houver.
+  final String? emitterName;
+
+  /// Linha "CNPJ: …" no bloco do emitente.
+  final String? emitterCnpj;
+
+  /// Endereço do emitente (linhas em `div.text` após o CNPJ).
+  final String? emitterAddressLine;
+
   Map<String, dynamic> toJson(String sourceUrl) => {
         'sourceUrl': sourceUrl,
         'emissionAt': emissionRaw,
         'items': items.map((e) => e.toJson()).toList(),
         if (purchaseTotalRaw != null) 'purchaseTotal': purchaseTotalRaw,
         if (taxesTotalRaw != null) 'taxesTotal': taxesTotalRaw,
+        if (emitterName != null && emitterName!.trim().isNotEmpty)
+          'emitterName': emitterName!.trim(),
+        if (emitterCnpj != null && emitterCnpj!.trim().isNotEmpty)
+          'emitterCnpj': emitterCnpj!.trim(),
+        if (emitterAddressLine != null &&
+            emitterAddressLine!.trim().isNotEmpty)
+          'emitterAddress': emitterAddressLine!.trim(),
       };
 }
 
@@ -138,13 +157,44 @@ abstract final class NfceMtHtmlParser {
     final emissionRaw = em?.group(1)?.trim() ?? '';
 
     final totals = _parseTotalNota(doc);
+    final emit = _parseEmitter(doc);
 
     return NfceParseResult(
       emissionRaw: emissionRaw,
       items: items,
       purchaseTotalRaw: totals.$1,
       taxesTotalRaw: totals.$2,
+      emitterName: emit.$1,
+      emitterCnpj: emit.$2,
+      emitterAddressLine: emit.$3,
     );
+  }
+
+  /// Bloco `div.txtCenter`: nome (`txtTopo`), CNPJ e endereço em `div.text`.
+  static (String?, String?, String?) _parseEmitter(Document doc) {
+    final txtCenter =
+        doc.querySelector('div#conteudo div.txtCenter') ??
+            doc.querySelector('div.txtCenter');
+    if (txtCenter == null) return (null, null, null);
+
+    final topo = txtCenter.querySelector('div#u20.txtTopo') ??
+        txtCenter.querySelector('div.txtTopo');
+    final name = topo?.text.replaceAll(RegExp(r'\s+'), ' ').trim();
+    final nameNorm = name != null && name.isNotEmpty ? name : null;
+
+    String? cnpj;
+    final addressLines = <String>[];
+    for (final el in txtCenter.querySelectorAll('div.text')) {
+      final s = el.text.replaceAll(RegExp(r'\s+'), ' ').trim();
+      if (s.isEmpty) continue;
+      if (s.toUpperCase().startsWith('CNPJ:')) {
+        cnpj = s;
+      } else {
+        addressLines.add(s);
+      }
+    }
+    final joined = addressLines.join(' · ').trim();
+    return (nameNorm, cnpj, joined.isEmpty ? null : joined);
   }
 
   /// Lê `#totalNota`: valor total da nota e tributos (Lei Federal 12.741/2012).

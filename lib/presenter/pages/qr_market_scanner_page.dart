@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../view_models/qr_market_scanner_view_model.dart';
+import '../widgets/market_save_dialog.dart';
 
 class QrMarketScannerPage extends StatefulWidget {
   const QrMarketScannerPage({super.key, required this.viewModel});
@@ -15,7 +16,7 @@ class QrMarketScannerPage extends StatefulWidget {
 class _QrMarketScannerPageState extends State<QrMarketScannerPage> {
   late final MobileScannerController _controller;
 
-  /// Enquanto o diálogo de erro estiver aberto, ignora novas leituras do QR.
+  /// Enquanto um diálogo estiver aberto, ignora novas leituras do QR.
   bool _blockingUntilErrorDismissed = false;
 
   @override
@@ -46,6 +47,64 @@ class _QrMarketScannerPageState extends State<QrMarketScannerPage> {
 
     final result = await widget.viewModel.processScannedValue(raw);
     if (!mounted || result.silent) return;
+
+    if (result.needsMarketSelection && result.prepared != null) {
+      _blockingUntilErrorDismissed = true;
+      try {
+        final prep = result.prepared!;
+        final stores = await widget.viewModel.listStores();
+        if (!mounted) return;
+        final pick = await showMarketSaveDialog(
+          context: context,
+          prepared: prep,
+          stores: stores,
+        );
+        if (!mounted || pick == null) return;
+
+        final saveResult = await widget.viewModel.commitPrepared(
+          prep,
+          marketName: pick.marketName,
+          preferredStoreId: pick.preferredStoreId,
+        );
+        if (!mounted || saveResult.silent) return;
+
+        if (saveResult.success) {
+          final parts = <String>['${saveResult.itemCount} itens'];
+          if (saveResult.purchaseTotalRaw != null) {
+            parts.add('total R\$ ${saveResult.purchaseTotalRaw}');
+          }
+          if (saveResult.taxesTotalRaw != null) {
+            parts.add('tributos R\$ ${saveResult.taxesTotalRaw}');
+          }
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Nota salva: ${parts.join(' · ')}.')),
+          );
+          return;
+        }
+
+        await showDialog<void>(
+          context: context,
+          barrierDismissible: false,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Atenção'),
+            content: Text(
+              saveResult.message ?? 'Não foi possível salvar a nota.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      } finally {
+        if (mounted) {
+          _blockingUntilErrorDismissed = false;
+        }
+      }
+      return;
+    }
 
     if (result.success) {
       final parts = <String>['${result.itemCount} itens'];

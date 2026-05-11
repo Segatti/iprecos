@@ -33,6 +33,21 @@ class ManualProductRecord {
   final String? photoRelativePath;
 }
 
+/// Resultado de uma busca por colisão de EAN em itens de NFC-e.
+class ReceiptItemBarcodeConflict {
+  const ReceiptItemBarcodeConflict({
+    required this.receiptId,
+    required this.itemIndex,
+    required this.description,
+    this.storeName,
+  });
+
+  final String receiptId;
+  final int itemIndex;
+  final String description;
+  final String? storeName;
+}
+
 /// Dados extras do usuário por linha da NFC-e (foto, EAN e marca quando a nota veio vazia).
 class ReceiptItemOverride {
   const ReceiptItemOverride({
@@ -54,6 +69,33 @@ class ReceiptItemOverride {
   final String? userBrand;
 }
 
+/// Mercado cadastrado pelo usuário (vinculado às NFC-e salvas).
+class StoreRecord {
+  const StoreRecord({
+    required this.id,
+    required this.name,
+    this.cnpj,
+    this.addressLine,
+    required this.createdAtMs,
+  });
+
+  final String id;
+  final String name;
+  final String? cnpj;
+  final String? addressLine;
+  final int createdAtMs;
+
+  factory StoreRecord.fromRow(Map<String, Object?> r) {
+    return StoreRecord(
+      id: r['id']! as String,
+      name: r['name']! as String,
+      cnpj: (r['cnpj'] as String?)?.trim(),
+      addressLine: (r['address_line'] as String?)?.trim(),
+      createdAtMs: r['created_at_ms']! as int,
+    );
+  }
+}
+
 /// Persistência de consultas NFC-e (payload JSON).
 class NfceReceiptRepository {
   NfceReceiptRepository(this._db);
@@ -62,22 +104,35 @@ class NfceReceiptRepository {
 
   /// Mais recentes primeiro.
   Future<List<NfceReceiptSummary>> listReceipts() async {
-    final rows = await _db.query(
-      'nfce_receipts',
-      orderBy: 'created_at_ms DESC',
-    );
+    final rows = await _db.rawQuery('''
+SELECT r.id, r.source_url, r.emission_raw, r.payload_json, r.created_at_ms,
+       s.name AS store_name
+FROM nfce_receipts r
+LEFT JOIN stores s ON s.id = r.store_id
+ORDER BY r.created_at_ms DESC
+''');
     return rows.map(NfceReceiptSummary.fromDbRow).toList();
   }
 
   Future<NfceReceiptDetail?> getReceiptById(String id) async {
-    final rows = await _db.query(
-      'nfce_receipts',
-      where: 'id = ?',
-      whereArgs: [id],
-      limit: 1,
-    );
+    final rows = await _db.rawQuery('''
+SELECT r.id, r.source_url, r.emission_raw, r.payload_json, r.created_at_ms,
+       s.name AS join_store_name,
+       s.cnpj AS join_store_cnpj,
+       s.address_line AS join_store_address
+FROM nfce_receipts r
+LEFT JOIN stores s ON s.id = r.store_id
+WHERE r.id = ?
+LIMIT 1
+''', [id]);
     if (rows.isEmpty) return null;
-    final base = NfceReceiptDetail.fromDbRow(rows.first);
+    final row = rows.single;
+    final base = NfceReceiptDetail.fromDbRow(
+      row,
+      joinStoreName: row['join_store_name'] as String?,
+      joinStoreCnpj: row['join_store_cnpj'] as String?,
+      joinStoreAddress: row['join_store_address'] as String?,
+    );
     if (base == null) return null;
     final ov = await _receiptOverridesByIndex(id);
     final merged = <Map<String, dynamic>>[
@@ -92,6 +147,9 @@ class NfceReceiptRepository {
       items: merged,
       purchaseTotalRaw: base.purchaseTotalRaw,
       taxesTotalRaw: base.taxesTotalRaw,
+      storeName: base.storeName,
+      storeCnpj: base.storeCnpj,
+      storeAddressLine: base.storeAddressLine,
     );
   }
 
@@ -111,6 +169,10 @@ class NfceReceiptRepository {
   }
 
   /// Mescla payload bruto + override para UI (detalhe da compra).
+  ///
+  /// Diferencia EAN do código interno da loja: a NFC-e SEFAZ-MT frequentemente
+  /// traz um `code` que **não** é EAN (ex.: `AR068060`); nesse caso o `userBarcode`
+  /// do override é o EAN de fato do produto.
   static Map<String, dynamic> mergeReceiptItemForDisplay(
     Map<String, dynamic> item,
     int itemIndex,
@@ -120,15 +182,29 @@ class NfceReceiptRepository {
     m['_itemIndex'] = itemIndex;
     final nc = m['code']?.toString().trim();
     final noteCodeEmpty = nc == null || nc.isEmpty;
+    final noteCodeIsEan = ProductCatalog.looksLikeEan(nc);
     final nb = m['brand']?.toString().trim();
     final noteBrandEmpty = nb == null || nb.isEmpty;
+
     m['_noteCodeEmpty'] = noteCodeEmpty;
+    m['_noteCodeIsEan'] = noteCodeIsEan;
     m['_noteBrandEmpty'] = noteBrandEmpty;
-    if (noteCodeEmpty &&
-        o?.userBarcode != null &&
-        o!.userBarcode!.trim().isNotEmpty) {
-      m['code'] = o.userBarcode!.trim();
+
+    final userBarcode = o?.userBarcode?.trim();
+    final hasUserBarcode = userBarcode != null && userBarcode.isNotEmpty;
+
+    if (!noteCodeEmpty && !noteCodeIsEan) {
+      // Código da nota é só interno da loja: preserva em `storeCode`.
+      m['storeCode'] = nc;
+      if (hasUserBarcode) {
+        m['code'] = userBarcode;
+      } else {
+        m['code'] = null;
+      }
+    } else if (noteCodeEmpty && hasUserBarcode) {
+      m['code'] = userBarcode;
     }
+
     if (noteBrandEmpty &&
         o?.userBrand != null &&
         o!.userBrand!.trim().isNotEmpty) {
@@ -242,11 +318,22 @@ class NfceReceiptRepository {
         final m = Map<String, dynamic>.from(raw);
         final o = ovMap[idx];
         final noteCode = m['code']?.toString().trim();
-        final effectiveCode = (noteCode != null && noteCode.isNotEmpty)
-            ? noteCode
-            : o?.userBarcode?.trim();
-        final c =
-            effectiveCode != null && effectiveCode.isNotEmpty ? effectiveCode : null;
+        final hasNoteCode = noteCode != null && noteCode.isNotEmpty;
+        final noteCodeIsEan = ProductCatalog.looksLikeEan(noteCode);
+        final userBc = o?.userBarcode?.trim();
+        final hasUserBc = userBc != null && userBc.isNotEmpty;
+
+        String? c;
+        String? sc;
+        if (hasNoteCode && noteCodeIsEan) {
+          c = noteCode;
+        } else if (hasNoteCode && !noteCodeIsEan) {
+          sc = noteCode;
+          c = hasUserBc ? userBc : null;
+        } else if (hasUserBc) {
+          c = userBc;
+        }
+
         final noteBrand = m['brand']?.toString().trim();
         final effectiveBrand = (noteBrand != null && noteBrand.isNotEmpty)
             ? noteBrand
@@ -267,6 +354,7 @@ class NfceReceiptRepository {
             unitPrice: m['unitPrice'] as String?,
             lineTotal: m['lineTotal']?.toString() ?? '',
             brand: b,
+            storeCode: sc,
             productPhotoRelativePath: p,
           ),
         );
@@ -443,35 +531,109 @@ class NfceReceiptRepository {
 
   /// Verifica se algum item de NFC-e salva (ou override) contém o `barcode`.
   Future<bool> receiptsContainBarcode(String barcode) async {
-    final b = barcode.trim();
-    if (b.isEmpty) return false;
+    final hit = await findReceiptItemEanConflict(barcode: barcode);
+    return hit != null;
+  }
 
-    final overrideHit = await _db.query(
+  /// Procura um item de NFC-e que já use `barcode` como EAN (no `code` da nota
+  /// quando este é um EAN, ou no `user_barcode` de um override),
+  /// ignorando opcionalmente um par `(receiptId, itemIndex)` específico
+  /// (útil para reedição do próprio item).
+  Future<ReceiptItemBarcodeConflict?> findReceiptItemEanConflict({
+    required String barcode,
+    String? excludeReceiptId,
+    int? excludeItemIndex,
+  }) async {
+    final b = barcode.trim();
+    if (b.isEmpty) return null;
+
+    bool isExcluded(String receiptId, int itemIndex) {
+      return excludeReceiptId != null &&
+          excludeItemIndex != null &&
+          receiptId == excludeReceiptId &&
+          itemIndex == excludeItemIndex;
+    }
+
+    final overrideHits = await _db.query(
       'nfce_receipt_item_overrides',
-      columns: ['receipt_id'],
+      columns: ['receipt_id', 'item_index'],
       where: 'user_barcode = ?',
       whereArgs: [b],
-      limit: 1,
     );
-    if (overrideHit.isNotEmpty) return true;
+    for (final row in overrideHits) {
+      final rid = row['receipt_id']! as String;
+      final idx = row['item_index']! as int;
+      if (isExcluded(rid, idx)) continue;
+      return _buildReceiptItemConflict(receiptId: rid, itemIndex: idx);
+    }
 
-    final receipts = await _db.query('nfce_receipts', columns: ['payload_json']);
+    final receipts = await _db.rawQuery('''
+SELECT r.id AS receipt_id, r.payload_json AS payload_json, s.name AS store_name
+FROM nfce_receipts r
+LEFT JOIN stores s ON s.id = r.store_id
+''');
     for (final row in receipts) {
       try {
+        final receiptId = row['receipt_id']! as String;
         final decoded = jsonDecode(row['payload_json']! as String);
         if (decoded is! Map) continue;
         final items = decoded['items'];
         if (items is! List) continue;
-        for (final raw in items) {
+        for (var idx = 0; idx < items.length; idx++) {
+          final raw = items[idx];
           if (raw is! Map) continue;
           final code = raw['code']?.toString().trim();
-          if (code != null && code == b) return true;
+          // Apenas considera código da nota se for de fato um EAN; senão é
+          // só código interno da loja.
+          if (code == null || code.isEmpty) continue;
+          if (!ProductCatalog.looksLikeEan(code)) continue;
+          if (code != b) continue;
+          if (isExcluded(receiptId, idx)) continue;
+          return ReceiptItemBarcodeConflict(
+            receiptId: receiptId,
+            itemIndex: idx,
+            description: raw['description']?.toString().trim() ?? '',
+            storeName: (row['store_name'] as String?)?.trim(),
+          );
         }
       } catch (_) {
         continue;
       }
     }
-    return false;
+    return null;
+  }
+
+  Future<ReceiptItemBarcodeConflict?> _buildReceiptItemConflict({
+    required String receiptId,
+    required int itemIndex,
+  }) async {
+    final rows = await _db.rawQuery('''
+SELECT r.payload_json AS payload_json, s.name AS store_name
+FROM nfce_receipts r
+LEFT JOIN stores s ON s.id = r.store_id
+WHERE r.id = ?
+LIMIT 1
+''', [receiptId]);
+    if (rows.isEmpty) return null;
+    String description = '';
+    try {
+      final decoded = jsonDecode(rows.single['payload_json']! as String);
+      if (decoded is Map) {
+        final items = decoded['items'];
+        if (items is List && itemIndex >= 0 && itemIndex < items.length) {
+          final raw = items[itemIndex];
+          if (raw is Map) {
+            description = raw['description']?.toString().trim() ?? '';
+          }
+        }
+      }
+    } catch (_) {}
+    return ReceiptItemBarcodeConflict(
+      receiptId: receiptId,
+      itemIndex: itemIndex,
+      description: description,
+      storeName: (rows.single['store_name'] as String?)?.trim(),
+    );
   }
 
   /// Atualiza cadastro manual sem alterar preço (`unit_price`) nem data de criação.
@@ -505,19 +667,103 @@ class NfceReceiptRepository {
     );
   }
 
-  Future<void> savePayload({
+  /// Mercados cadastrados (nome ascendente, ignorando maiúsculas).
+  Future<List<StoreRecord>> listStores() async {
+    final rows = await _db.query(
+      'stores',
+      orderBy: 'LOWER(TRIM(name)) ASC',
+    );
+    return rows.map(StoreRecord.fromRow).toList();
+  }
+
+  Future<StoreRecord?> getStore(String id) async {
+    final rows = await _db.query(
+      'stores',
+      where: 'id = ?',
+      whereArgs: [id],
+      limit: 1,
+    );
+    if (rows.isEmpty) return null;
+    return StoreRecord.fromRow(rows.single);
+  }
+
+  /// Busca por nome exatamente igual (após trim), ignorando maiúsculas.
+  Future<StoreRecord?> findStoreByNameInsensitive(String name) async {
+    final n = name.trim();
+    if (n.isEmpty) return null;
+    final rows = await _db.query(
+      'stores',
+      where: 'LOWER(TRIM(name)) = LOWER(?)',
+      whereArgs: [n],
+      limit: 1,
+    );
+    if (rows.isEmpty) return null;
+    return StoreRecord.fromRow(rows.single);
+  }
+
+  /// Cria um novo mercado (normalmente com CNPJ/endereço extraídos da nota).
+  Future<String> insertStore({
+    required String name,
+    String? cnpj,
+    String? addressLine,
+  }) async {
+    String? norm(String? s) {
+      final t = s?.trim();
+      if (t == null || t.isEmpty) return null;
+      return t;
+    }
+
+    final id = 'store_${DateTime.now().microsecondsSinceEpoch}';
+    await _db.insert('stores', {
+      'id': id,
+      'name': name.trim(),
+      'cnpj': norm(cnpj),
+      'address_line': norm(addressLine),
+      'created_at_ms': DateTime.now().millisecondsSinceEpoch,
+    });
+    return id;
+  }
+
+  /// Salva NFC-e. [storeId] vincula o mercado e grava um snapshot em [payload].
+  Future<String> savePayload({
     required String sourceUrl,
     required String emissionRaw,
     required Map<String, dynamic> payload,
+    String? storeId,
   }) async {
     final id =
         'nfce_${DateTime.now().microsecondsSinceEpoch}_${sourceUrl.hashCode.abs()}';
+
+    if (storeId != null && storeId.isNotEmpty) {
+      final storeRows = await _db.query(
+        'stores',
+        where: 'id = ?',
+        whereArgs: [storeId],
+        limit: 1,
+      );
+      if (storeRows.isNotEmpty) {
+        final s = storeRows.single;
+        payload['store'] = {
+          'id': s['id'],
+          'name': s['name'],
+          if (s['cnpj'] != null &&
+              (s['cnpj'] as String).trim().isNotEmpty)
+            'cnpj': (s['cnpj'] as String).trim(),
+          if (s['address_line'] != null &&
+              (s['address_line'] as String).trim().isNotEmpty)
+            'addressLine': (s['address_line'] as String).trim(),
+        };
+      }
+    }
+
     await _db.insert('nfce_receipts', {
       'id': id,
       'source_url': sourceUrl,
       'emission_raw': emissionRaw,
       'payload_json': jsonEncode(payload),
       'created_at_ms': DateTime.now().millisecondsSinceEpoch,
+      'store_id': storeId != null && storeId.isNotEmpty ? storeId : null,
     });
+    return id;
   }
 }

@@ -27,6 +27,7 @@ class _ProductSearchPageState extends State<ProductSearchPage> {
 
   @override
   void dispose() {
+    widget.viewModel.clearSearchQuery();
     _controller.dispose();
     super.dispose();
   }

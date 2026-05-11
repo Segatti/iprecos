@@ -349,18 +349,138 @@ void main() {
       expect(await repo.receiptsContainBarcode('OVR123'), isTrue);
     });
 
-    test('receipt item override não substitui código já vindo da nota', () async {
+    test(
+      'override sobrescreve EAN quando a nota traz só código interno da loja',
+      () async {
+        final (db, repo) = await openRepo();
+        addTearDown(db.close);
+
+        await repo.savePayload(
+          sourceUrl: 'https://nfce/coded',
+          emissionRaw: 'a',
+          payload: {
+            'items': [
+              {
+                'description': 'Produto',
+                'code': 'AR068060',
+                'quantity': '1',
+                'lineTotal': '1,00',
+              },
+            ],
+          },
+        );
+        final id = (await repo.listReceipts()).single.id;
+        await repo.upsertReceiptItemOverride(
+          receiptId: id,
+          itemIndex: 0,
+          userBarcode: '7891234567890',
+        );
+
+        final detail = await repo.getReceiptById(id);
+        expect(detail!.items.single['code'], '7891234567890');
+        expect(detail.items.single['storeCode'], 'AR068060');
+        expect(detail.items.single['_noteCodeEmpty'], isFalse);
+        expect(detail.items.single['_noteCodeIsEan'], isFalse);
+
+        final lines = await repo.listAllPurchasedItemLines();
+        expect(lines.single.code, '7891234567890');
+        expect(lines.single.storeCode, 'AR068060');
+      },
+    );
+
+    test('findReceiptItemEanConflict ignora código interno (não-EAN)', () async {
       final (db, repo) = await openRepo();
       addTearDown(db.close);
 
       await repo.savePayload(
-        sourceUrl: 'https://nfce/coded',
+        sourceUrl: 'https://nfce/store-code',
         emissionRaw: 'a',
         payload: {
           'items': [
             {
               'description': 'Produto',
-              'code': 'INT-1',
+              'code': 'AR068060',
+              'quantity': '1',
+              'lineTotal': '1,00',
+            },
+          ],
+        },
+      );
+
+      expect(
+        await repo.findReceiptItemEanConflict(barcode: 'AR068060'),
+        isNull,
+      );
+    });
+
+    test(
+      'findReceiptItemEanConflict acha EAN em outra nota mas ignora item atual',
+      () async {
+        final (db, repo) = await openRepo();
+        addTearDown(db.close);
+
+        await repo.savePayload(
+          sourceUrl: 'https://nfce/a',
+          emissionRaw: 'a',
+          payload: {
+            'items': [
+              {
+                'description': 'Produto X',
+                'code': '7891000000000',
+                'quantity': '1',
+                'lineTotal': '1,00',
+              },
+            ],
+          },
+        );
+        final firstId = (await repo.listReceipts()).first.id;
+
+        await repo.savePayload(
+          sourceUrl: 'https://nfce/b',
+          emissionRaw: 'b',
+          payload: {
+            'items': [
+              {
+                'description': 'Produto Y',
+                'quantity': '1',
+                'lineTotal': '1,00',
+              },
+            ],
+          },
+        );
+        final secondId = (await repo.listReceipts()).first.id;
+
+        final hit = await repo.findReceiptItemEanConflict(
+          barcode: '7891000000000',
+          excludeReceiptId: secondId,
+          excludeItemIndex: 0,
+        );
+        expect(hit, isNotNull);
+        expect(hit!.receiptId, firstId);
+        expect(hit.itemIndex, 0);
+        expect(hit.description, 'Produto X');
+
+        final none = await repo.findReceiptItemEanConflict(
+          barcode: '7891000000000',
+          excludeReceiptId: firstId,
+          excludeItemIndex: 0,
+        );
+        expect(none, isNull);
+      },
+    );
+
+    test('override não sobrescreve EAN quando a nota já traz EAN', () async {
+      final (db, repo) = await openRepo();
+      addTearDown(db.close);
+
+      await repo.savePayload(
+        sourceUrl: 'https://nfce/ean',
+        emissionRaw: 'a',
+        payload: {
+          'items': [
+            {
+              'description': 'Produto',
+              'code': '7891000000000',
               'quantity': '1',
               'lineTotal': '1,00',
             },
@@ -371,15 +491,17 @@ void main() {
       await repo.upsertReceiptItemOverride(
         receiptId: id,
         itemIndex: 0,
-        userBarcode: '789999',
+        userBarcode: '0000000000000',
       );
 
       final detail = await repo.getReceiptById(id);
-      expect(detail!.items.single['code'], 'INT-1');
-      expect(detail.items.single['_noteCodeEmpty'], isFalse);
+      expect(detail!.items.single['code'], '7891000000000');
+      expect(detail.items.single['storeCode'], isNull);
+      expect(detail.items.single['_noteCodeIsEan'], isTrue);
 
       final lines = await repo.listAllPurchasedItemLines();
-      expect(lines.single.code, 'INT-1');
+      expect(lines.single.code, '7891000000000');
+      expect(lines.single.storeCode, isNull);
     });
   });
 }
