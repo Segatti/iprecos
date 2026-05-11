@@ -41,7 +41,8 @@ class NfceParseResult {
   final String emissionRaw;
   final List<NfceLineItem> items;
 
-  /// Valor da linha "Valor total R$:" em `#totalNota` (texto como na página).
+  /// Valor de "Valor total R$:" em `#totalNota`, ou "Valor a pagar R$:" se a
+  /// primeira linha não existir (layout mobile / nota simplificada).
   final String? purchaseTotalRaw;
 
   /// Valor da linha de tributos (Lei 12.741/2012) em `#totalNota`.
@@ -147,11 +148,16 @@ abstract final class NfceMtHtmlParser {
   }
 
   /// Lê `#totalNota`: valor total da nota e tributos (Lei Federal 12.741/2012).
+  ///
+  /// Várias versões da página omitem "Valor total R$:" e exibem só
+  /// "Valor a pagar R$:" (ex.: [example_qr2.html], [example_qr3.html]).
+  /// Nesse caso usamos o valor a pagar como total salvo.
   static (String?, String?) _parseTotalNota(Document doc) {
     final block = doc.querySelector('#totalNota');
     if (block == null) return (null, null);
 
-    String? purchaseTotal;
+    String? valorTotalProdutos;
+    String? valorAPagar;
     String? taxesTotal;
 
     for (final line in block.children) {
@@ -165,14 +171,18 @@ abstract final class NfceMtHtmlParser {
           line.querySelector('span.totalNumb')?.text.trim() ?? '';
       if (value.isEmpty || value == 'NaN') continue;
 
-      if (labelText.contains('Valor total R\$')) {
-        purchaseTotal = value;
+      // "Valor total R$:" (com desconto em linhas separadas) vs só "Valor a pagar R$:"
+      if (labelText.contains('Valor total') && labelText.contains(r'$')) {
+        valorTotalProdutos = value;
+      } else if (labelText.contains('Valor a pagar')) {
+        valorAPagar = value;
       }
       if (labelText.contains('Tributos Totais')) {
         taxesTotal = value;
       }
     }
 
+    final purchaseTotal = valorTotalProdutos ?? valorAPagar;
     return (purchaseTotal, taxesTotal);
   }
 }

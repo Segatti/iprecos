@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html class="ui-mobile" data-darkreader-mode="dynamic" data-darkreader-scheme="dark"><head><style class="darkreader darkreader--fallback" media="screen"></style><style class="darkreader darkreader--user-agent" media="screen">@layer {
+html {
+    background-color: var(--darkreader-background-ffffff, #181a1b) !important;
+}
+html {
+    color-scheme: dark !important;
+}
+iframe {
+    color-scheme: dark !important;
+}
+html, body {
+    background-color: var(--darkreader-background-ffffff, #181a1b);
+}
+html, body {
+    border-color: var(--darkreader-border-4c4c4c, #736b5e);
+    color: var(--darkreader-text-000000, #e8e6e3);
+}
+a {
+    color: var(--darkreader-text-0040ff, #3391ff);
+}
+table {
+    border-color: var(--darkreader-border-808080, #545b5e);
+}
+mark {
+    color: var(--darkreader-text-000000, #e8e6e3);
+}
+::placeholder {
+    color: var(--darkreader-text-a9a9a9, #b2aba1);
+}
+input:-webkit-autofill,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+    background-color: var(--darkreader-background-faffbd, #404400) !important;
+    color: var(--darkreader-text-000000, #e8e6e3) !important;
+}
+::selection {
+    background-color: var(--darkreader-background-0060d4, #004daa) !important;
+    color: var(--darkreader-text-ffffff, #e8e6e3) !important;
+}
+::-moz-selection {
+    background-color: var(--darkreader-background-0060d4, #004daa) !important;
+    color: var(--darkreader-text-ffffff, #e8e6e3) !important;
+}
+}</style><style class="darkreader darkreader--text" media="screen"></style><style class="darkreader darkreader--invert" media="screen">.jfk-bubble.gtx-bubble, .captcheck_answer_label > input + img, span#closed_text > img[src^="https://www.gstatic.com/images/branding/googlelogo"], span[data-href^="https://www.hcaptcha.com/"] > #icon, img.Wirisformula, a[data-testid="headerMediumLogo"]>svg, .d2l-navigation-link-image-container, .d2l-iframe-loading-container, div.mc-ip-hide[style*="background: rgb(255, 255, 255) !important"], [style*="color: rgb(0, 0, 1) !important;"] {
+    filter: invert(100%) hue-rotate(180deg) contrast(90%) !important;
+}</style><style class="darkreader darkreader--inline" media="screen">[data-darkreader-inline-bgcolor] {
+  background-color: var(--darkreader-inline-bgcolor) !important;
+}
+[data-darkreader-inline-bgimage] {
+  background-image: var(--darkreader-inline-bgimage) !important;
+}
+[data-darkreader-inline-border] {
+  border-color: var(--darkreader-inline-border) !important;
+}
+[data-darkreader-inline-border-bottom] {
+  border-bottom-color: var(--darkreader-inline-border-bottom) !important;
+}
+[data-darkreader-inline-border-left] {
+  border-left-color: var(--darkreader-inline-border-left) !important;
+}
+[data-darkreader-inline-border-right] {
+  border-right-color: var(--darkreader-inline-border-right) !important;
+}
+[data-darkreader-inline-border-top] {
+  border-top-color: var(--darkreader-inline-border-top) !important;
+}
+[data-darkreader-inline-boxshadow] {
+  box-shadow: var(--darkreader-inline-boxshadow) !important;
+}
+[data-darkreader-inline-color] {
+  color: var(--darkreader-inline-color) !important;
+}
+[data-darkreader-inline-fill] {
+  fill: var(--darkreader-inline-fill) !important;
+}
+[data-darkreader-inline-stroke] {
+  stroke: var(--darkreader-inline-stroke) !important;
+}
+[data-darkreader-inline-outline] {
+  outline-color: var(--darkreader-inline-outline) !important;
+}
+[data-darkreader-inline-stopcolor] {
+  stop-color: var(--darkreader-inline-stopcolor) !important;
+}
+[data-darkreader-inline-bg] {
+  background: var(--darkreader-inline-bg) !important;
+}
+[data-darkreader-inline-border-short] {
+  border: var(--darkreader-inline-border-short) !important;
+}
+[data-darkreader-inline-border-bottom-short] {
+  border-bottom: var(--darkreader-inline-border-bottom-short) !important;
+}
+[data-darkreader-inline-border-left-short] {
+  border-left: var(--darkreader-inline-border-left-short) !important;
+}
+[data-darkreader-inline-border-right-short] {
+  border-right: var(--darkreader-inline-border-right-short) !important;
+}
+[data-darkreader-inline-border-top-short] {
+  border-top: var(--darkreader-inline-border-top-short) !important;
+}
+[data-darkreader-inline-invert] {
+    filter: invert(100%) hue-rotate(180deg);
+}</style><style class="darkreader darkreader--variables" media="screen">:root {
+   --darkreader-neutral-background: var(--darkreader-background-ffffff, #181a1b);
+   --darkreader-neutral-text: var(--darkreader-text-000000, #e8e6e3);
+   --darkreader-selection-background: var(--darkreader-background-0060d4, #004daa);
+   --darkreader-selection-text: var(--darkreader-text-ffffff, #e8e6e3);
+}</style><style class="darkreader darkreader--root-vars" media="screen"></style><!-- base href="https://www.sefaz.mt.gov.br/nfce/consultanfce?p=51260509477652003292651120003421851599330465|2|1|1|B707C43728CB3C0E64BE4F3444FC03BADE3F9531" -->
+        <meta http-equiv="Expires" content="Thu, 01 Jan 1970 00:00:00 GMT">
+        <meta http-equiv="Cache-Control" content="no-store">
+        <meta http-equiv="Pragma" content="no-cache">
+        <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="IE=9, IE=edge">
+        <link href="example_qr2_arquivos/SefazEstilos.css" rel="stylesheet" type="text/css" media="screen"><style class="darkreader darkreader--sync" media="screen"></style>
+        <link rel="stylesheet" href="example_qr2_arquivos/jquery.mobile-1.4.5.min.css" type="text/css"><style class="darkreader darkreader--sync" media="screen"></style>
+        <link rel="stylesheet" href="example_qr2_arquivos/nfceMob.css" type="text/css"><style class="darkreader darkreader--sync" media="screen"></style>
+        <link rel="stylesheet" href="example_qr2_arquivos/nfceMob_ie.css" type="text/css"><style class="darkreader darkreader--sync" media="screen"></style>
+        <script type="text/javascript" src="example_qr2_arquivos/index.js"></script>
+        <script type="text/javascript" src="example_qr2_arquivos/jquery.js"></script>
+        <script type="text/javascript" src="example_qr2_arquivos/jquery.mobile-1.4.5.min.js"></script>
+        <script type="text/javascript" src="example_qr2_arquivos/jqueryui.js"></script>
+        <script type="text/javascript" src="example_qr2_arquivos/desabilitarBotoes.js"></script>
+        <script type="text/javascript" language="javascript">
+          function paginaImpressao()
+          {
+              open('/nfce/consultanfce?pagn=impressao&tagSolicitada=9&tpImp=DANFE', 'Resumo', 'top=0,left=0,width=760,height=600,scrollbars=1,resizable=1');
+          }
+          
+          function paginaInicial()
+          {
+              window.open('/nfce/consultanfce', '_self');
+          }
+
+          function desabilitaBotoes()
+          {
+              //Desabilitando botões, caso validação ocorra com sucesso
+              desabilitarBotoes(obterArrayBotoes(form));
+              return true;
+          }
+
+          function obterArrayBotoes(form)
+          {
+              //Obtendo os botões a serem desabilitados
+              var botao1 = form.bttnNovaConsulta;
+              var botao2 = form.bttnCancelar;
+              var botao3 = form.btnImpressaoUso;
+              var botao4 = form.bttnImprimir;
+              //Retorna um Array com os botões que devem ser desabilitados
+              return new Array(botao1, botao2, botao3, botao4);
+          }
+          window.onload = function ()
+          {
+              document.form.onsubmit = function ()
+              {
+                  desabilitaBotoes();
+              }
+          }
+        </script>
+    <meta name="darkreader" content="2a090cd166ae44f98efd98be521c35ef"><style class="darkreader darkreader--override" media="screen">.vimvixen-hint {
+    background-color: var(--darkreader-background-ffd76e, #684b00) !important;
+    border-color: var(--darkreader-background-c59d00, #9e7e00) !important;
+    color: var(--darkreader-text-302505, #d7d4cf) !important;
+}
+#vimvixen-console-frame {
+    color-scheme: light !important;
+}
+::placeholder {
+    opacity: 0.5 !important;
+}
+#edge-translate-panel-body,
+.MuiTypography-body1,
+.nfe-quote-text {
+    color: var(--darkreader-neutral-text) !important;
+}
+gr-main-header {
+    background-color: var(--darkreader-background-add8e6, #1b4958) !important;
+}
+.tou-z65h9k,
+.tou-mignzq,
+.tou-1b6i2ox,
+.tou-lnqlqk {
+    background-color: var(--darkreader-neutral-background) !important;
+}
+.tou-75mvi {
+    background-color: var(--darkreader-background-cfecf5, #0f3a47) !important;
+}
+.tou-ta9e87,
+.tou-1w3fhi0,
+.tou-1b8t2us,
+.tou-py7lfi,
+.tou-1lpmd9d,
+.tou-1frrtv8,
+.tou-17ezmgn {
+    background-color: var(--darkreader-background-f5f5f5, #1e2021) !important;
+}
+.tou-uknfeu {
+    background-color: var(--darkreader-background-faedda, #432c09) !important;
+}
+.tou-6i3zyv {
+    background-color: var(--darkreader-background-85c3d8, #245d70) !important;
+}
+div.mermaid-viewer-control-panel .btn {
+    background-color: var(--darkreader-neutral-background);
+    fill: var(--darkreader-neutral-text);
+}
+svg g rect.er {
+    fill: var(--darkreader-neutral-background) !important;
+}
+svg g rect.er.entityBox {
+    fill: var(--darkreader-neutral-background) !important;
+}
+svg g rect.er.attributeBoxOdd {
+    fill: var(--darkreader-neutral-background) !important;
+}
+svg g rect.er.attributeBoxEven {
+    fill: var(--darkreader-selection-background);
+    fill-opacity: 0.8 !important;
+}
+svg rect.er.relationshipLabelBox {
+    fill: var(--darkreader-neutral-background) !important;
+}
+svg g g.nodes rect,
+svg g g.nodes polygon {
+    fill: var(--darkreader-neutral-background) !important;
+}
+svg g rect.task {
+    fill: var(--darkreader-selection-background) !important;
+}
+svg line.messageLine0,
+svg line.messageLine1 {
+    stroke: var(--darkreader-neutral-text) !important;
+}
+div.mermaid .actor {
+    fill: var(--darkreader-neutral-background) !important;
+}
+mitid-authenticators-code-app > .code-app-container {
+    background-color: white !important;
+    padding-top: 1rem;
+}
+iframe#unpaywall[src$="unpaywall.html"] {
+    color-scheme: light !important;
+}
+select {
+    --darkreader-bg--form-control-background-color: rgba(22, 22, 22, 0) !important;
+}
+body#tumblr {
+    --darkreader-bg--secondary-accent: 31, 32, 34 !important;
+    --darkreader-bg--white: 23, 23, 23 !important;
+    --darkreader-text--black: 228, 224, 218 !important;
+}
+:host {
+    --d2l-border-color: var(--darkreader-bg--d2l-color-gypsum) !important;
+    --d2l-button-icon-background-color-hover: var(--darkreader-bg--d2l-color-gypsum) !important;
+    --d2l-color-ferrite: var(--darkreader-neutral-text) !important;
+    --d2l-color-sylvite: var(--darkreader-bg--d2l-color-sylvite) !important;
+    --d2l-dropdown-background-color: var(--darkreader-neutral-background) !important;
+    --d2l-dropdown-border-color: var(--darkreader-border--d2l-color-mica) !important;
+    --d2l-input-backgroud-color: var(--darkreader-neutral-background) !important;
+    --d2l-menu-border-color: var(--darkreader-bg--d2l-color-gypsum) !important;
+    --d2l-tooltip-background-color: var(--darkreader-neutral-background) !important;
+    --d2l-tooltip-border-color: var(--darkreader-bg--d2l-color-gypsum) !important;
+}
+:host([_floating]) .d2l-floating-buttons-container {
+    background-color: var(--darkreader-neutral-background) !important;
+    border-top-color: var(--darkreader-border--d2l-color-mica) !important;
+    opacity: 0.88 !important;
+}
+d2l-card {
+    background: var(--darkreader-neutral-background) !important;
+    border-color: var(--darkreader-border--d2l-color-gypsum) !important;
+}
+d2l-dropdown-content > div,
+d2l-menu-item {
+    background-color: var(--darkreader-neutral-background) !important;
+    border-radius: 10px !important;
+}
+d2l-empty-state-simple {
+    border-color: var(--darkreader-bg--d2l-color-gypsum) !important;
+}
+.d2l-button-filter > ul > li > a.vui-button {
+    border-color: var(--darkreader-border--d2l-color-mica) !important;
+}
+.d2l-label-text:has(.d2l-button-subtle-content):hover,
+.d2l-label-text:has(.d2l-button-subtle-content):focus,
+.d2l-label-text:has(.d2l-button-subtle-content):active {
+    background-color: var(--darkreader-bg--d2l-color-gypsum) !important;
+}
+.d2l-navigation-centerer {
+    color: inherit !important;
+}
+.d2l-tabs-layout {
+    border-color: var(--darkreader-border--d2l-color-gypsum) !important;
+}
+.d2l-input,
+.d2l-calendar-date,
+.d2l-htmleditor-container {
+    background-color: var(--darkreader-neutral-background) !important;
+}
+.d2l-collapsible-panel {
+    border: 1px solid var(--darkreader-border--d2l-color-mica) !important;
+    border-radius: 0.4rem !important;
+}
+.d2l-collapsible-panel-divider {
+    border-bottom: 1px solid var(--darkreader-border--d2l-color-mica) !important;
+}
+.d2l-w2d-flex {
+    border-bottom: 2px solid var(--darkreader-border--d2l-color-mica) !important;
+}
+.d2l-collapsible-panel scrolled,
+.d2l-collapsible-panel-header,
+.d2l-w2d-collection-fixed {
+    background-color: var(--darkreader-neutral-background) !important;
+}
+.d2l-loading-spinner-bg {
+    fill: var(--darkreader-bg--d2l-color-gypsum) !important;
+}
+.d2l-loading-spinner-bg-stroke {
+    stroke: var(--darkreader-border--d2l-color-mica) !important;
+}
+.d2l-loading-spinner-wrapper svg path,
+.d2l-loading-spinner-wrapper svg circle {
+    fill: var(--darkreader-neutral-background) !important;
+}
+.d2l-twopanelselector-side.d2l-twopanelselector-side-sep {
+    background: var(--darkreader-bg--d2l-color-mica) !important;
+}
+.d2l-le-TreeAccordionItem-anchor::before {
+    background: var(--darkreader-bg--d2l-color-corundum) !important;
+}
+table[class|="moz-header"] {
+    background: none;
+}
+*[style*="color: rgba(0,0,0,"],
+*[style*="color: rgba(0, 0, 0,"],
+*[style*="color:#000"],
+*[style*="color:black"],
+*[style*="color:#282828"],
+*[style*="color:#444"] {
+    color: var(--darkreader-neutral-text) !important;
+}
+*[style*="background:#fff"],
+*[style*="background-color:#fff"] {
+    background: var(--darkreader-neutral-background) !important;
+}
+*[bgcolor="#F5F5F5"],
+*[style*="background-color: #F5F5F5"] {
+    background: var(--darkreader-background-f5f5f5, #1e2021) !important;
+}
+body[style*="background: rgb(255, 255, 255) !important"] *:not(a),
+.body[style*="background-color: rgb(254, 254, 254) !important"] *:not(a) {
+    background-color: var(--darkreader-neutral-background) !important;
+}
+div[style*="www.gstatic.com/android/"] {
+    background: none !important;
+}
+*[style*="background:#f9f9f9"] {
+    background: var(--darkreader-background-f9f9f9, #1b1e1f) !important;
+}
+body.mediawiki.skin-vector #mw-page-base {
+    background-image: none !important;
+}
+embed[type="application/pdf"] { filter: invert(100%) contrast(90%); }</style><title></title></head>
+    <body class="ui-mobile-viewport ui-overlay-a"><div data-role="page" data-url="/nfce/consultanfce?p=51260509477652003292651120003421851599330465|2|1|1|B707C43728CB3C0E64BE4F3444FC03BADE3F9531" tabindex="0" class="ui-page ui-page-theme-a ui-page-active" style="">
+        <form name="form" action="/nfce/consultanfce" method="POST">
+            <input type="hidden" name="ret" value="1">
+            <input type="hidden" name="pagn">
+            <div style="text-align:center; position: relative; display: block;z-index: 50;">
+                
+                <br>
+                <div style="width: 100%;">
+                    <table class="SEFAZ-TABLE-Moldura" width="50%" align="center" cellspacing="0" cellpadding="2px" border="0">
+                        <tbody><tr class="SEFAZ-TR-SubTitulo" valign="middle">
+                            <td align="left">
+                                <input type="button" value="Imprimir NFC-e" class="SEFAZ-INPUT-Botao ui-button ui-widget ui-state-default ui-corner-all" name="bttnImprimir" onclick="javaScript: paginaImpressao();" role="button">                                 
+                                <input type="button" value="Nova Consulta" class="SEFAZ-INPUT-Botao ui-button ui-widget ui-state-default ui-corner-all" name="bttnNovaConsulta" onclick="javaScript: paginaInicial();" role="button">                                                                                
+                                <input type="button" value="Voltar" class="SEFAZ-INPUT-Botao ui-button ui-widget ui-state-default ui-corner-all" onclick="javascript:history.go(-1);" name="bttnCancelar" role="button">
+                               
+                            </td>
+                        </tr>
+                    </tbody></table>
+                </div>
+            </div>
+        </form>
+        <div>
+            <div data-role="header" xmlns:chave="http://exslt.org/chaveacesso" xmlns:r="http://www.serpro.gov.br/nfe/remessanfe.xsd" xmlns:n="http://www.portalfiscal.inf.br/nfe" role="banner" class="ui-header ui-bar-inherit">
+<h1 class="tit ui-title" role="heading" aria-level="1">
+<img src="example_qr2_arquivos/NFCe_vertical_semDescricao.png" width="90" height="64" alt="NFC-e"><p>DOCUMENTO AUXILIAR DA NOTA FISCAL DE CONSUMIDOR ELETRÔNICA</p>
+<p></p>
+</h1>
+</div><div data-role="content" class="ui-content" role="main">
+<div id="conteudo">
+<div id="avisos"></div>
+<div class="txtCenter">
+<div id="u20" class="txtTopo">SDB COMERCIO DE ALIMENTOS LTDA</div>
+<div class="text">
+								CNPJ:
+								09.477.652/0032-92</div>
+<div class="text">AV. TEN CEL. DUARTE
+							,
+							1517
+							,
+							
+							,
+							DOM AQUINO
+							,
+							CUIABA
+							,
+							MT</div>
+</div>
+<form class="ui-filterable"><div class="ui-input-search ui-body-inherit ui-corner-all ui-shadow-inset ui-input-has-clear"><input data-type="search" placeholder="Filtrar itens..." autocorrect="off" autocomplete="off"><a href="#" tabindex="-1" aria-hidden="true" class="ui-input-clear ui-btn ui-icon-delete ui-btn-icon-notext ui-corner-all ui-input-clear-hidden" title="Clear text">Clear text</a></div></form><table border="0" align="center" cellpadding="0" cellspacing="0" id="tabResult" data-filter="true">
+<tbody><tr id="Item + 1">
+<td valign="top"><span class="txtTit">SUCO DEL VALLE 1L</span><span class="RCod">
+										(Código:
+										7898341430036
+										)
+									</span>
+<br>
+<span class="Rqtd"><strong>Qtde.:</strong>1</span><span class="RUN"><strong>UN: </strong>UN</span><span class="RvlUnit"><strong>Vl. Unit.:</strong>
+										&nbsp;
+										10,29</span></td><td align="right" valign="top" class="txtTit noWrap">
+									Vl. Total
+									<br>
+<span class="valor">10,29</span></td>
+</tr>
+<tr id="Item + 2">
+<td valign="top"><span class="txtTit">CUCA BAN DOCE LEITE KG</span><span class="RCod">
+										(Código:
+										5192
+										)
+									</span>
+<br>
+<span class="Rqtd"><strong>Qtde.:</strong>0,5</span><span class="RUN"><strong>UN: </strong>KG</span><span class="RvlUnit"><strong>Vl. Unit.:</strong>
+										&nbsp;
+										29,9</span></td><td align="right" valign="top" class="txtTit noWrap">
+									Vl. Total
+									<br>
+<span class="valor">14,95</span></td>
+</tr>
+<tr id="Item + 3">
+<td valign="top"><span class="txtTit">QJ MUSSARELA ESPECIAL</span><span class="RCod">
+										(Código:
+										5719
+										)
+									</span>
+<br>
+<span class="Rqtd"><strong>Qtde.:</strong>0,278</span><span class="RUN"><strong>UN: </strong>KG</span><span class="RvlUnit"><strong>Vl. Unit.:</strong>
+										&nbsp;
+										49,9</span></td><td align="right" valign="top" class="txtTit noWrap">
+									Vl. Total
+									<br>
+<span class="valor">13,87</span></td>
+</tr>
+<tr id="Item + 4">
+<td valign="top"><span class="txtTit">BACON EXT BLACK EXCE KG</span><span class="RCod">
+										(Código:
+										7644
+										)
+									</span>
+<br>
+<span class="Rqtd"><strong>Qtde.:</strong>0,288</span><span class="RUN"><strong>UN: </strong>KG</span><span class="RvlUnit"><strong>Vl. Unit.:</strong>
+										&nbsp;
+										59,9</span></td><td align="right" valign="top" class="txtTit noWrap">
+									Vl. Total
+									<br>
+<span class="valor">17,25</span></td>
+</tr>
+<tr id="Item + 5">
+<td valign="top"><span class="txtTit">BOLINHO BAUD 40G BAUN CH</span><span class="RCod">
+										(Código:
+										7891962000725
+										)
+									</span>
+<br>
+<span class="Rqtd"><strong>Qtde.:</strong>1</span><span class="RUN"><strong>UN: </strong>UN</span><span class="RvlUnit"><strong>Vl. Unit.:</strong>
+										&nbsp;
+										2,49</span></td><td align="right" valign="top" class="txtTit noWrap">
+									Vl. Total
+									<br>
+<span class="valor">2,49</span></td>
+</tr>
+<tr id="Item + 6">
+<td valign="top"><span class="txtTit">CHOC BATON 16G</span><span class="RCod">
+										(Código:
+										78912359
+										)
+									</span>
+<br>
+<span class="Rqtd"><strong>Qtde.:</strong>1</span><span class="RUN"><strong>UN: </strong>UN</span><span class="RvlUnit"><strong>Vl. Unit.:</strong>
+										&nbsp;
+										2,49</span></td><td align="right" valign="top" class="txtTit noWrap">
+									Vl. Total
+									<br>
+<span class="valor">2,49</span></td>
+</tr>
+<tr id="Item + 7">
+<td valign="top"><span class="txtTit">CHOC BATON 16G</span><span class="RCod">
+										(Código:
+										78912359
+										)
+									</span>
+<br>
+<span class="Rqtd"><strong>Qtde.:</strong>1</span><span class="RUN"><strong>UN: </strong>UN</span><span class="RvlUnit"><strong>Vl. Unit.:</strong>
+										&nbsp;
+										2,49</span></td><td align="right" valign="top" class="txtTit noWrap">
+									Vl. Total
+									<br>
+<span class="valor">2,49</span></td>
+</tr>
+</tbody></table>
+<div id="totalNota" class="txtRight">
+<div id="linhaTotal">
+<label>Qtd. total de itens:</label><span class="totalNumb">7</span>
+</div>
+<div id="linhaTotal" class="linhaShade">
+<label>Valor a pagar R$:</label><span class="totalNumb txtMax">63,83</span>
+</div>
+<div id="linhaForma">
+<label>Forma de pagamento:</label><span class="totalNumb txtTitR">Valor pago R$:</span>
+</div>
+<div id="linhaTotal">
+<label class="tx">
+											Cartão de Débito
+										</label><span class="totalNumb">63,83</span>
+</div>
+<div id="linhaTotal">
+<label class="tx">Troco </label><span class="totalNumb">NaN</span>
+</div>
+</div>
+</div>
+<div id="infos" class="txtCenter">
+<div data-role="collapsible" data-collapsed-icon="carat-d" data-expanded-icon="carat-u" data-collapsed="false" class="ui-collapsible ui-collapsible-inset ui-corner-all ui-collapsible-themed-content"><h4 class="ui-collapsible-heading"><a href="#" class="ui-collapsible-heading-toggle ui-btn ui-icon-carat-u ui-btn-icon-left ui-btn-inherit">Informações gerais da Nota<span class="ui-collapsible-heading-status"> click to collapse contents</span></a></h4><div class="ui-collapsible-content ui-body-inherit" aria-hidden="false">
+
+<ul data-role="listview" data-inset="false" class="ui-listview">
+<li class="ui-li-static ui-body-inherit ui-first-child ui-last-child">
+<strong>EMISSÃO NORMAL</strong>
+<br>
+<br>
+<strong>Número: </strong>342185<strong> Série: </strong>112<strong> Emissão: </strong>07/05/2026 19:03:58
+								- Via Consumidor
+								<br>
+<br>
+<strong>Protocolo de Autorização: </strong>151260275667231       07/05/2026 19:04:04<br>
+<br>
+<strong>
+										Ambiente de Produção -
+									
+									Versão XML:
+									4.00
+									- Versão XSLT: 2.05
+								</strong>
+</li>
+</ul>
+</div></div>
+<div data-role="collapsible" data-collapsed-icon="carat-d" data-expanded-icon="carat-u" data-collapsed="false" class="ui-collapsible ui-collapsible-inset ui-corner-all ui-collapsible-themed-content"><h4 class="ui-collapsible-heading"><a href="#" class="ui-collapsible-heading-toggle ui-btn ui-icon-carat-u ui-btn-icon-left ui-btn-inherit">Chave de acesso<span class="ui-collapsible-heading-status"> click to collapse contents</span></a></h4><div class="ui-collapsible-content ui-body-inherit" aria-hidden="false">
+
+<ul data-role="listview" data-inset="false" class="ui-listview">
+<li class="ui-li-static ui-body-inherit ui-first-child ui-last-child">
+								Consulte pela Chave de Acesso em
+								
+								http://www.sefaz.mt.gov.br/nfce/consultanfce<br>
+<br>
+<strong>Chave de acesso:</strong>
+<br>
+<span class="chave">5126 0509 4776 5200 3292 6511 2000 3421 8515 9933 0465</span>
+</li>
+</ul>
+</div></div>
+<div data-role="collapsible" data-collapsed-icon="carat-d" data-expanded-icon="carat-u" data-collapsed="false" class="ui-collapsible ui-collapsible-inset ui-corner-all ui-collapsible-themed-content"><h4 class="ui-collapsible-heading"><a href="#" class="ui-collapsible-heading-toggle ui-btn ui-icon-carat-u ui-btn-icon-left ui-btn-inherit">Consumidor<span class="ui-collapsible-heading-status"> click to collapse contents</span></a></h4><div class="ui-collapsible-content ui-body-inherit" aria-hidden="false">
+
+<ul data-role="listview" data-inset="false" class="ui-listview">
+<li class="ui-li-static ui-body-inherit ui-first-child ui-last-child">
+<strong>Consumidor não identificado</strong>
+</li>
+</ul>
+</div></div>
+<div data-role="collapsible" data-collapsed-icon="carat-d" data-expanded-icon="carat-u" data-collapsed="false" class="ui-collapsible ui-collapsible-inset ui-corner-all ui-collapsible-themed-content"><h4 class="ui-collapsible-heading"><a href="#" class="ui-collapsible-heading-toggle ui-btn ui-icon-carat-u ui-btn-icon-left ui-btn-inherit">Informações de interesse do contribuinte<span class="ui-collapsible-heading-status"> click to collapse contents</span></a></h4><div class="ui-collapsible-content ui-body-inherit" aria-hidden="false">
+
+<ul data-role="listview" data-inset="false" class="ui-listview">
+<li class="ui-li-static ui-body-inherit ui-first-child ui-last-child">[##PROCONMT.
+ R. ALENQUER ESQ AV RIBEIRAO PRETO, SN, CPA I, CUIABA-MT, 78055-010, 
+WHATSAPP (65)9228-3098 E TELEFONE (65)3613-2100 TRIBUTOS TOTAIS 
+INCIDENTES (LEI FEDERAL 12.7412012) - FEDERAL R$ 8,78 ESTADUAL R$ 8,41 
+MUNICIPAL R$ 0,00 ; COO: 194322, PDV: 112]</li>
+</ul>
+</div></div>
+</div>
+</div>
+
+        </div>                
+    
+</div><div class="ui-loader ui-corner-all ui-body-a ui-loader-default"><span class="ui-icon-loading"></span><h1>loading</h1></div></body></html>

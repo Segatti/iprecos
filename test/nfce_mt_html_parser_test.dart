@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -72,6 +73,32 @@ void main() {
       expect(r.items.first.lineTotal, '20,90');
       expect(r.purchaseTotalRaw, '849,13');
       expect(r.taxesTotalRaw, '213,58');
+    });
+
+    test('example_qr2: total vem de Valor a pagar (sem linha Valor total)', () {
+      final file = File('example_qr2.html');
+      if (!file.existsSync()) {
+        fail('Coloque example_qr2.html na raiz do pacote para este teste.');
+      }
+      final r = NfceMtHtmlParser.parse(
+        file.readAsStringSync(encoding: latin1),
+      );
+      expect(r, isNotNull);
+      expect(r!.purchaseTotalRaw, '63,83');
+      expect(r.taxesTotalRaw, isNull);
+    });
+
+    test('example_qr3: Valor a pagar e tributos em txtObs', () {
+      final file = File('example_qr3.html');
+      if (!file.existsSync()) {
+        fail('Coloque example_qr3.html na raiz do pacote para este teste.');
+      }
+      final r = NfceMtHtmlParser.parse(
+        file.readAsStringSync(encoding: latin1),
+      );
+      expect(r, isNotNull);
+      expect(r!.purchaseTotalRaw, '23,98');
+      expect(r.taxesTotalRaw, '5,92');
     });
   });
 }
